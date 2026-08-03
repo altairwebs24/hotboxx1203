@@ -1,0 +1,132 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Plus, Search } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/lib/cart";
+import { ZAR } from "@/lib/format";
+
+export const Route = createFileRoute("/menu")({
+  head: () => ({
+    meta: [
+      { title: "Menu | Hotboxx Kotas, Burgers, Sandwiches & Combos" },
+      {
+        name: "description",
+        content:
+          "Browse the full Hotboxx menu: kotas from R20, burgers, sandwiches, wings and nugget combos. Add to cart and order online.",
+      },
+      { property: "og:title", content: "Menu | Hotboxx" },
+      { property: "og:description", content: "Kotas, burgers, sandwiches, wings and nugget combos." },
+    ],
+  }),
+  component: MenuPage,
+});
+
+type Item = { id: string; name: string; description: string; price: number; available: boolean };
+type Category = { id: string; name: string; sort_order: number; menu_items: Item[] };
+
+function MenuPage() {
+  const { add } = useCart();
+  const [q, setQ] = useState("");
+  const [active, setActive] = useState<string>("all");
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["menu"],
+    queryFn: async (): Promise<Category[]> => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id, name, sort_order, menu_items(id, name, description, price, available, sort_order)")
+        .order("sort_order");
+      if (error) throw new Error(error.message);
+      return (data ?? []).map((c) => ({
+        ...c,
+        menu_items: [...(c.menu_items ?? [])]
+          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+          .map((i) => ({ ...i, price: Number(i.price) })),
+      })) as Category[];
+    },
+  });
+
+  const categories = data ?? [];
+  const term = q.trim().toLowerCase();
+  const visible = categories
+    .filter((c) => active === "all" || c.id === active)
+    .map((c) => ({
+      ...c,
+      menu_items: c.menu_items.filter(
+        (i) => i.available && (!term || i.name.toLowerCase().includes(term) || (i.description ?? "").toLowerCase().includes(term)),
+      ),
+    }))
+    .filter((c) => c.menu_items.length > 0);
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-10">
+      <h1 className="text-4xl">THE <span className="flame-text">MENU</span></h1>
+      <p className="mt-2 text-sm text-muted-foreground">Tap add to build your cart, then checkout for your order number.</p>
+
+      <div className="sticky top-16 z-30 -mx-4 mt-6 bg-background/90 px-4 py-3 backdrop-blur">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search kotas, burgers, combos…"
+            className="w-full rounded-full border border-border bg-card py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+          {[{ id: "all", name: "All" }, ...categories].map((c) => (
+            <button
+              key={c.id}
+              onClick={() => setActive(c.id)}
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition-colors ${
+                active === c.id ? "flame-bg text-primary-foreground" : "border border-border text-muted-foreground"
+              }`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {isLoading && <p className="mt-10 text-sm text-muted-foreground">Loading the menu…</p>}
+      {error && <p className="mt-10 text-sm text-destructive">Could not load the menu. Please refresh.</p>}
+
+      <div className="mt-8 space-y-12">
+        {visible.map((cat) => (
+          <section key={cat.id}>
+            <h2 className="text-2xl">{cat.name}</h2>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {cat.menu_items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col justify-between rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent/60"
+                >
+                  <div>
+                    <h3 className="text-lg leading-tight">{item.name}</h3>
+                    {item.description && (
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{item.description}</p>
+                    )}
+                  </div>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="font-display text-xl text-accent">{ZAR(item.price)}</span>
+                    <button
+                      onClick={() => {
+                        add({ id: item.id, name: item.name, price: item.price });
+                        toast.success(`${item.name} added to cart`);
+                      }}
+                      className="inline-flex items-center gap-1 rounded-full flame-bg px-4 py-2 text-xs font-bold text-primary-foreground"
+                    >
+                      <Plus className="size-3.5" /> Add
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+}
