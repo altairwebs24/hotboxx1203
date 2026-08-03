@@ -23,8 +23,15 @@ export const Route = createFileRoute("/menu")({
   component: MenuPage,
 });
 
-type Item = { id: string; name: string; description: string; price: number; available: boolean };
-type Category = { id: string; name: string; sort_order: number; menu_items: Item[] };
+type Item = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  available: boolean;
+  sort_order: number;
+};
+type Category = { id: string; name: string; slug: string; sort_order: number; menu_items: Item[] };
 
 function MenuPage() {
   const { add } = useCart();
@@ -36,7 +43,7 @@ function MenuPage() {
     queryFn: async (): Promise<Category[]> => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id, name, sort_order, menu_items(id, name, description, price, available, sort_order)")
+        .select("id, name, slug, sort_order, menu_items(id, name, description, price, available, sort_order)")
         .order("sort_order");
       if (error) throw new Error(error.message);
       return (data ?? []).map((c) => ({
@@ -47,6 +54,7 @@ function MenuPage() {
       })) as Category[];
     },
   });
+
 
   const categories = data ?? [];
   const term = q.trim().toLowerCase();
