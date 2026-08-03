@@ -24,7 +24,7 @@ export const Route = createFileRoute("/menu")({
 });
 
 type Item = { id: string; name: string; description: string; price: number; available: boolean };
-type Category = { id: string; name: string; description: string; sort_order: number; menu_items: Item[] };
+type Category = { id: string; name: string; sort_order: number; menu_items: Item[] };
 
 function MenuPage() {
   const { add } = useCart();
@@ -36,7 +36,7 @@ function MenuPage() {
     queryFn: async (): Promise<Category[]> => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id, name, description, sort_order, menu_items(id, name, description, price, available, sort_order)")
+        .select("id, name, sort_order, menu_items(id, name, description, price, available, sort_order)")
         .order("sort_order");
       if (error) throw new Error(error.message);
       return (data ?? []).map((c) => ({
@@ -97,7 +97,6 @@ function MenuPage() {
         {visible.map((cat) => (
           <section key={cat.id}>
             <h2 className="text-2xl">{cat.name}</h2>
-            {cat.description && <p className="text-sm text-muted-foreground">{cat.description}</p>}
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {cat.menu_items.map((item) => (
                 <div
