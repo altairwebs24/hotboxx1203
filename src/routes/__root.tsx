@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "../lib/cart";
 import { SiteHeader } from "../components/SiteHeader";
 import { SiteFooter } from "../components/SiteFooter";
+import { BottomNav } from "../components/BottomNav";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -138,7 +139,9 @@ function RootComponent() {
             <Outlet />
           </main>
           <SiteFooter />
+          <div className="h-16 md:hidden" />
         </div>
+        <BottomNav />
         <Toaster position="top-center" />
       </CartProvider>
     </QueryClientProvider>

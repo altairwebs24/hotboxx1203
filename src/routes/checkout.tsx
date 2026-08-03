@@ -7,6 +7,7 @@ import { ZAR, WHATSAPP_NUMBER } from "@/lib/format";
 import { placeOrder } from "@/lib/orders.functions";
 import { placeOrderAsUser } from "@/lib/admin.functions";
 import { useAuth } from "@/hooks/useAuth";
+import { DrinkUpsell } from "@/components/DrinkUpsell";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -133,6 +134,8 @@ function Checkout() {
   return (
     <form onSubmit={onSubmit} className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-4xl">CHECK<span className="flame-text">OUT</span></h1>
+
+      <DrinkUpsell />
 
       <div className="mt-6 grid gap-6 md:grid-cols-[1.2fr_1fr]">
         <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
