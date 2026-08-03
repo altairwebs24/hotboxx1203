@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { ZAR } from "@/lib/format";
+import { DrinkUpsell } from "@/components/DrinkUpsell";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -68,6 +69,8 @@ function CartPage() {
               </div>
             ))}
           </div>
+
+          <DrinkUpsell />
 
           <div className="mt-6 rounded-2xl border border-border bg-card p-5">
             <div className="flex items-center justify-between text-sm">
