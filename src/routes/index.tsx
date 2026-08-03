@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Hotboxx | Order Kotas, Burgers & Combos Online" },
       {
         property: "og:description",
-        content: "Kotas, burgers and combos made hot to order. Order online, pay on WhatsApp.",
+        content: "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R30 delivery around Matsulu.",
       },
     ],
   }),
