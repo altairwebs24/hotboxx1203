@@ -46,10 +46,18 @@ function Checkout() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (lines.length === 0) return;
-    if (name.trim().length < 2) return toast.error("Please enter your name");
-    if (phone.replace(/\D/g, "").length < 9) return toast.error("Please enter a valid phone number");
-    if (fulfillment === "delivery" && address.trim().length < 5)
-      return toast.error("Please enter your delivery address");
+    if (name.trim().length < 2) {
+      toast.error("Please enter your name");
+      return;
+    }
+    if (phone.replace(/\D/g, "").length < 9) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+    if (fulfillment === "delivery" && address.trim().length < 5) {
+      toast.error("Please enter your delivery address");
+      return;
+    }
 
     setBusy(true);
     try {
