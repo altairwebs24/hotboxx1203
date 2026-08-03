@@ -1,8 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Flame, Truck, Timer, ShieldCheck } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Flame, Truck, Timer, ShieldCheck, Plus, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 import hero from "@/assets/hero-kota.jpg.asset.json";
-import drinks from "@/assets/drinks.jpg.asset.json";
-import { WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "@/lib/format";
+import drinksImg from "@/assets/drinks.jpg.asset.json";
+import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/lib/cart";
+import { deco, itemImage } from "@/lib/menu-images";
+import { ZAR, WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,7 +28,43 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const FEATURED = [
+  { slug: "kota", name: "Noah Arch" },
+  { slug: "kota-wings", name: "Regular & Wings" },
+  { slug: "burgers", name: "Full House Burger" },
+  { slug: "sandwich-chips", name: "Ham, Cheese, Egg & Chips" },
+];
+
+type Featured = { id: string; name: string; price: number; slug: string; sort_order: number };
+
 function Home() {
+  const { add } = useCart();
+
+  const { data: featured } = useQuery({
+    queryKey: ["featured"],
+    queryFn: async (): Promise<Featured[]> => {
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("id, name, price, sort_order, available, categories!inner(slug)")
+        .in(
+          "name",
+          FEATURED.map((f) => f.name),
+        )
+        .eq("available", true);
+      if (error) throw new Error(error.message);
+      const rows = (data ?? []).map((r) => ({
+        id: r.id,
+        name: r.name,
+        price: Number(r.price),
+        sort_order: r.sort_order,
+        slug: (r.categories as unknown as { slug: string }).slug,
+      }));
+      return FEATURED.map((f) => rows.find((r) => r.slug === f.slug && r.name === f.name)).filter(
+        Boolean,
+      ) as Featured[];
+    },
+  });
+
   return (
     <div>
       <section className="relative overflow-hidden">
@@ -62,6 +103,11 @@ function Home() {
               alt="Hotboxx Noah's Ark kota meal for two"
               className="w-full rounded-3xl border border-border object-cover shadow-2xl"
             />
+            <img
+              src={deco.kotaWings}
+              alt="Hotboxx kota served with crispy wings"
+              className="absolute -bottom-8 -right-4 hidden w-40 rotate-3 rounded-2xl border-2 border-background object-cover shadow-2xl md:block"
+            />
             <div className="absolute -bottom-5 left-5 rounded-2xl border border-border bg-card px-4 py-3 shadow-xl">
               <p className="font-display text-lg">NOAH'S ARK</p>
               <p className="text-xs text-muted-foreground">Meal for 2 — R120</p>
@@ -70,7 +116,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-4 px-4 sm:grid-cols-3">
+      <section className="mx-auto mt-10 grid max-w-6xl gap-4 px-4 sm:grid-cols-3">
         {[
           { icon: Timer, title: "Made to order", text: "Everything is grilled and packed fresh when you order." },
           { icon: Truck, title: "R30 delivery", text: "Delivery around Matsulu, or collect from us." },
@@ -84,9 +130,80 @@ function Home() {
         ))}
       </section>
 
+      {/* Deco strip */}
+      <section className="mx-auto mt-14 max-w-6xl px-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[
+            { src: deco.kotaNuggets, alt: "Hotboxx kota with golden chicken nuggets" },
+            { src: deco.noahsArk, alt: "The Noah's Ark kota, a meal for two" },
+            { src: deco.staff, alt: "Hotboxx team member serving a fresh kota" },
+            { src: deco.menuBoard, alt: "A packed Hotboxx order in front of the menu board" },
+          ].map((d) => (
+            <img
+              key={d.alt}
+              src={d.src}
+              alt={d.alt}
+              loading="lazy"
+              className="h-40 w-full rounded-2xl border border-border object-cover md:h-56"
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Featured picks */}
+      <section className="mx-auto mt-16 max-w-6xl px-4">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-3xl">FAN <span className="flame-text">FAVOURITES</span></h2>
+            <p className="mt-1 text-sm text-muted-foreground">Four of the most ordered boxes.</p>
+          </div>
+          <Link
+            to="/menu"
+            className="hidden items-center gap-1 rounded-full border border-border px-4 py-2 text-sm font-bold hover:bg-secondary sm:inline-flex"
+          >
+            Full menu <ArrowRight className="size-4" />
+          </Link>
+        </div>
+
+        <div className="mt-5 grid gap-3 grid-cols-2 lg:grid-cols-4">
+          {(featured ?? []).map((item) => {
+            const img = itemImage(item.slug, item.sort_order);
+            return (
+              <div key={item.id} className="overflow-hidden rounded-2xl border border-border bg-card">
+                {img && (
+                  <img src={img} alt={item.name} loading="lazy" className="h-32 w-full bg-black object-cover sm:h-40" />
+                )}
+                <div className="p-3">
+                  <h3 className="text-base leading-tight">{item.name}</h3>
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span className="font-display text-lg text-accent">{ZAR(item.price)}</span>
+                    <button
+                      onClick={() => {
+                        add({ id: item.id, name: item.name, price: item.price });
+                        toast.success(`${item.name} added to cart`);
+                      }}
+                      className="inline-flex items-center gap-1 rounded-full flame-bg px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                    >
+                      <Plus className="size-3.5" /> Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <Link
+          to="/menu"
+          className="mt-6 flex items-center justify-center gap-2 rounded-full flame-bg py-3.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25"
+        >
+          See the full menu <ArrowRight className="size-4" />
+        </Link>
+      </section>
+
       <section className="mx-auto mt-16 max-w-6xl px-4">
         <div className="grid items-center gap-8 overflow-hidden rounded-3xl border border-border bg-card md:grid-cols-2">
-          <img src={drinks.url} alt="Hotboxx fizzy drinks" className="h-full w-full object-cover" />
+          <img src={drinksImg.url} alt="Hotboxx fizzy drinks" className="h-full w-full object-cover" />
           <div className="p-8">
             <h2 className="text-3xl">ICE COLD FIZZY DRINKS</h2>
             <p className="mt-2 text-muted-foreground">
