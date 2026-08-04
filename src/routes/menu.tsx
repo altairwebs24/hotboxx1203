@@ -107,7 +107,7 @@ function MenuPage() {
         {visible.map((cat) => (
           <section key={cat.id}>
             <h2 className="text-2xl">{cat.name}</h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
               {cat.menu_items.map((item) => {
                 const img = itemImage(cat.slug, item.sort_order);
                 return (
@@ -120,28 +120,30 @@ function MenuPage() {
                         src={img}
                         alt={`${item.name} from the Hotboxx menu`}
                         loading="lazy"
-                        className="h-36 w-full bg-black object-cover"
+                        className="h-28 w-full bg-black object-cover sm:h-36"
                       />
                     ) : (
-                      <div className="grid h-36 w-full place-items-center bg-secondary">
+                      <div className="grid h-28 w-full place-items-center bg-secondary sm:h-36">
                         <CupSoda className="size-10 text-accent" />
                       </div>
                     )}
-                    <div className="flex flex-1 flex-col justify-between p-4">
-                      <div>
-                        <h3 className="text-lg leading-tight">{item.name}</h3>
+                    <div className="flex flex-1 flex-col justify-between p-3 sm:p-4">
+                      <div className="min-w-0">
+                        <h3 className="text-base leading-tight sm:text-lg">{item.name}</h3>
                         {item.description && (
-                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{item.description}</p>
+                          <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
+                            {item.description}
+                          </p>
                         )}
                       </div>
-                      <div className="mt-4 flex items-center justify-between">
-                        <span className="font-display text-xl text-accent">{ZAR(item.price)}</span>
+                      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                        <span className="font-display text-lg text-accent sm:text-xl">{ZAR(item.price)}</span>
                         <button
                           onClick={() => {
                             add({ id: item.id, name: item.name, price: item.price });
                             toast.success(`${item.name} added to cart`);
                           }}
-                          className="inline-flex items-center gap-1 rounded-full flame-bg px-4 py-2 text-xs font-bold text-primary-foreground"
+                          className="inline-flex shrink-0 items-center gap-1 rounded-full flame-bg px-3 py-1.5 text-xs font-bold text-primary-foreground sm:px-4 sm:py-2"
                         >
                           <Plus className="size-3.5" /> Add
                         </button>
