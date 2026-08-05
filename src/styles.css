@@ -97,6 +97,13 @@
     font-family: var(--font-sans);
   }
 
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+
+
   h1,
   h2,
   h3,
