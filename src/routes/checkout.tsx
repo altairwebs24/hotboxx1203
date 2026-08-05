@@ -76,6 +76,7 @@ function Checkout() {
 
       clear();
       setResult({ orderNumber: order.orderNumber, total: order.total });
+      toast.success(`Order placed — your order number is ${order.orderNumber}`);
 
       const summary = order.items
         .map((i) => `${i.quantity}x ${i.name}${i.note ? ` (${i.note})` : ""}`)
@@ -96,10 +97,23 @@ function Checkout() {
       <div className="mx-auto max-w-lg px-4 py-16 text-center">
         <p className="text-sm font-bold uppercase tracking-widest text-accent">Order placed</p>
         <h1 className="mt-3 font-display text-5xl flame-text">{result.orderNumber}</h1>
-        <p className="mt-4 text-muted-foreground">
-          Keep this order number. Complete payment on WhatsApp ({ZAR(result.total)}) and we'll start
-          preparing your food.
+        <p className="mt-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+          This is your order number
         </p>
+        <p className="mt-4 text-muted-foreground">
+          Write it down or screenshot it — you'll need it to track your order and to confirm payment.
+          Complete payment on WhatsApp ({ZAR(result.total)}) and we'll start preparing your food.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            void navigator.clipboard?.writeText(result.orderNumber);
+            toast.success("Order number copied");
+          }}
+          className="mt-4 rounded-full border border-border px-5 py-2 text-xs font-bold"
+        >
+          Copy order number
+        </button>
         <div className="mt-7 flex flex-col gap-3">
           <a
             href={`https://wa.me/${WHATSAPP_NUMBER}`}
