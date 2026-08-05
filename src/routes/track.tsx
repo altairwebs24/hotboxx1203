@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { trackOrder } from "@/lib/orders.functions";
-import { STATUS_LABEL, ZAR } from "@/lib/format";
+import { STATUS_LABEL } from "@/lib/format";
 
 export const Route = createFileRoute("/track")({
   head: () => ({
