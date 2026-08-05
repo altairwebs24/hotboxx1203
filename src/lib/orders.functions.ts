@@ -11,6 +11,6 @@ export const placeOrder = createServerFn({ method: "POST" })
 export const trackOrder = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => trackOrderSchema.parse(data))
   .handler(async ({ data }) => {
-    const { findOrderForCustomer } = await import("./hotboxx.server");
-    return findOrderForCustomer(data.orderNumber, data.phone);
+    const { findOrderStatus } = await import("./hotboxx.server");
+    return findOrderStatus(data.orderNumber);
   });

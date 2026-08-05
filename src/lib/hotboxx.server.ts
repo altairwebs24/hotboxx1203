@@ -87,22 +87,22 @@ export async function createOrder(raw: PlaceOrderInput, userId: string | null) {
   };
 }
 
-function normalizePhone(phone: string) {
-  return phone.replace(/\D/g, "").slice(-9);
-}
+export type OrderStatusResult = {
+  order_number: string;
+  status: string;
+  created_at: string;
+};
 
-export async function findOrderForCustomer(orderNumber: string, phone: string) {
+/** Public lookup: returns ONLY the order number, status and time — no customer details. */
+export async function findOrderStatus(orderNumber: string): Promise<OrderStatusResult | null> {
   const { data, error } = await supabaseAdmin
     .from("orders")
-    .select(
-      "id, order_number, customer_name, phone, fulfillment, address, note, subtotal, delivery_fee, total, status, created_at, order_items(name, unit_price, quantity, note)",
-    )
+    .select("order_number, status, created_at")
     .ilike("order_number", orderNumber.trim())
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) return null;
-  if (normalizePhone(data.phone) !== normalizePhone(phone)) return null;
-  return shapeOrder(data);
+  return { order_number: data.order_number, status: data.status as string, created_at: data.created_at };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
