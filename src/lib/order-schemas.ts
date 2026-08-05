@@ -22,5 +22,4 @@ export type PlaceOrderInput = z.infer<typeof placeOrderSchema>;
 
 export const trackOrderSchema = z.object({
   orderNumber: z.string().trim().min(3).max(20),
-  phone: z.string().trim().min(4).max(20),
 });
