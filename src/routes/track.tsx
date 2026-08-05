@@ -11,7 +11,7 @@ export const Route = createFileRoute("/track")({
       { title: "Track Your Order | Hotboxx" },
       {
         name: "description",
-        content: "Enter your Hotboxx order number and phone number to see the live status of your order.",
+        content: "Enter your Hotboxx order number to see the live status of your order.",
       },
       { property: "og:title", content: "Track Your Order | Hotboxx" },
       { property: "og:description", content: "Live status for your Hotboxx order." },
