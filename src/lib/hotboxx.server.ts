@@ -15,6 +15,7 @@ export type OrderRecord = {
   total: number;
   status: string;
   created_at: string;
+  store: string;
   items: { name: string; unit_price: number; quantity: number; note: string }[];
 };
 
@@ -55,9 +56,19 @@ export async function createOrder(raw: PlaceOrderInput, userId: string | null) {
   const deliveryFee = data.fulfillment === "delivery" ? Number(feeRow?.value ?? 30) : 0;
   const total = subtotal + deliveryFee;
 
+  const { data: store, error: storeError } = await supabaseAdmin
+    .from("stores")
+    .select("id, name, area")
+    .eq("id", data.storeId)
+    .eq("active", true)
+    .maybeSingle();
+  if (storeError) throw new Error(storeError.message);
+  if (!store) throw new Error("Please choose a store to order from");
+
   const { data: order, error: orderError } = await supabaseAdmin
     .from("orders")
     .insert({
+      store_id: store.id,
       user_id: userId,
       customer_name: data.customerName,
       phone: data.phone,
@@ -78,6 +89,7 @@ export async function createOrder(raw: PlaceOrderInput, userId: string | null) {
   if (itemsError) throw new Error(itemsError.message);
 
   return {
+    storeName: `${store.name} (${store.area})`,
     orderNumber: order.order_number,
     subtotal: Number(order.subtotal),
     deliveryFee: Number(order.delivery_fee),
@@ -120,6 +132,7 @@ export function shapeOrder(row: any): OrderRecord {
     total: Number(row.total),
     status: row.status,
     created_at: row.created_at,
+    store: row.stores ? `${row.stores.name} (${row.stores.area})` : "—",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     items: (row.order_items ?? []).map((i: any) => ({
       name: i.name,
@@ -161,7 +174,7 @@ export async function listAllOrders() {
   const { data, error } = await supabaseAdmin
     .from("orders")
     .select(
-      "id, order_number, customer_name, phone, fulfillment, address, note, subtotal, delivery_fee, total, status, created_at, order_items(name, unit_price, quantity, note)",
+      "id, order_number, customer_name, phone, fulfillment, address, note, subtotal, delivery_fee, total, status, created_at, stores(name, area), order_items(name, unit_price, quantity, note)",
     )
     .order("created_at", { ascending: false })
     .limit(300);
@@ -173,7 +186,7 @@ export async function listOrdersForUser(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("orders")
     .select(
-      "id, order_number, customer_name, phone, fulfillment, address, note, subtotal, delivery_fee, total, status, created_at, order_items(name, unit_price, quantity, note)",
+      "id, order_number, customer_name, phone, fulfillment, address, note, subtotal, delivery_fee, total, status, created_at, stores(name, area), order_items(name, unit_price, quantity, note)",
     )
     .eq("user_id", userId)
     .order("created_at", { ascending: false })

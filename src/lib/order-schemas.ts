@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const placeOrderSchema = z.object({
+  storeId: z.string().uuid({ message: "Please choose a store" }),
   customerName: z.string().trim().min(2).max(80),
   phone: z.string().trim().min(9).max(20),
   fulfillment: z.enum(["collection", "delivery"]),
