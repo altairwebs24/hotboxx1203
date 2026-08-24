@@ -138,6 +138,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
       <StoreProvider>
       <CartProvider>
         <div className="flex min-h-screen flex-col">
@@ -152,6 +153,8 @@ function RootComponent() {
         <Toaster position="top-center" />
       </CartProvider>
       </StoreProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
+
