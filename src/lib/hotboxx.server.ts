@@ -88,6 +88,7 @@ export async function createOrder(raw: PlaceOrderInput, userId: string | null) {
   if (itemsError) throw new Error(itemsError.message);
 
   return {
+    storeName: `${store.name} (${store.area})`,
     orderNumber: order.order_number,
     subtotal: Number(order.subtotal),
     deliveryFee: Number(order.delivery_fee),
