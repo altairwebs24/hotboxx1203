@@ -1,9 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Flame, ShoppingBag, Menu as MenuIcon, X } from "lucide-react";
 import { useState } from "react";
-import logo from "@/assets/hotboxx-logo.jpg.asset.json";
+import { useTheme } from "@/lib/theme";
 import { useCart } from "@/lib/cart";
 import { StoreBar } from "@/components/StoreBar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { WHATSAPP_DISPLAY } from "@/lib/format";
 
 const links = [
