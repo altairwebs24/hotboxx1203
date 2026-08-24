@@ -52,6 +52,8 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+
           <a
             href={`https://wa.me/27799155422`}
             target="_blank"
