@@ -86,6 +86,66 @@
   --foreground: oklch(0.97 0.005 80);
 }
 
+/* Theme: Red logo — clean white with bold red */
+.theme-red {
+  --background: oklch(0.99 0.004 60);
+  --foreground: oklch(0.2 0.02 30);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.02 30);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.02 30);
+  --primary: oklch(0.55 0.24 27);
+  --primary-foreground: oklch(0.99 0 0);
+  --flame: oklch(0.62 0.25 27);
+  --ember: oklch(0.5 0.22 25);
+  --secondary: oklch(0.96 0.012 40);
+  --secondary-foreground: oklch(0.24 0.02 30);
+  --muted: oklch(0.95 0.008 50);
+  --muted-foreground: oklch(0.45 0.02 40);
+  --accent: oklch(0.55 0.24 27);
+  --accent-foreground: oklch(0.99 0 0);
+  --border: oklch(0.9 0.01 45);
+  --input: oklch(0.9 0.01 45);
+  --ring: oklch(0.55 0.24 27);
+  --sidebar: oklch(0.98 0.006 50);
+  --sidebar-foreground: oklch(0.2 0.02 30);
+  --sidebar-accent: oklch(0.95 0.01 45);
+  --sidebar-accent-foreground: oklch(0.24 0.02 30);
+  --sidebar-border: oklch(0.9 0.01 45);
+  --sidebar-ring: oklch(0.55 0.24 27);
+}
+
+/* Theme: Black logo — monochrome ink */
+.theme-mono {
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.15 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0 0);
+  --primary: oklch(0.2 0 0);
+  --primary-foreground: oklch(0.99 0 0);
+  --flame: oklch(0.35 0 0);
+  --ember: oklch(0.25 0 0);
+  --secondary: oklch(0.94 0 0);
+  --secondary-foreground: oklch(0.18 0 0);
+  --muted: oklch(0.94 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.2 0 0);
+  --accent-foreground: oklch(0.99 0 0);
+  --border: oklch(0.88 0 0);
+  --input: oklch(0.88 0 0);
+  --ring: oklch(0.3 0 0);
+  --sidebar: oklch(0.97 0 0);
+  --sidebar-foreground: oklch(0.15 0 0);
+  --sidebar-primary: oklch(0.2 0 0);
+  --sidebar-accent: oklch(0.94 0 0);
+  --sidebar-accent-foreground: oklch(0.18 0 0);
+  --sidebar-border: oklch(0.88 0 0);
+  --sidebar-ring: oklch(0.3 0 0);
+}
+
+
 @layer base {
   * {
     border-color: var(--color-border);
