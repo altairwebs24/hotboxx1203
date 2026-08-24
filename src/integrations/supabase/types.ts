@@ -151,6 +151,7 @@ export type Database = {
           order_number: string
           phone: string
           status: Database["public"]["Enums"]["order_status"]
+          store_id: string | null
           subtotal: number
           total: number
           updated_at: string
@@ -167,6 +168,7 @@ export type Database = {
           order_number?: string
           phone: string
           status?: Database["public"]["Enums"]["order_status"]
+          store_id?: string | null
           subtotal: number
           total: number
           updated_at?: string
@@ -183,12 +185,21 @@ export type Database = {
           order_number?: string
           phone?: string
           status?: Database["public"]["Enums"]["order_status"]
+          store_id?: string | null
           subtotal?: number
           total?: number
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       settings: {
         Row: {
@@ -205,6 +216,42 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string
+        }
+        Relationships: []
+      }
+      stores: {
+        Row: {
+          active: boolean
+          address: string
+          area: string
+          created_at: string
+          id: string
+          name: string
+          phone: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          address?: string
+          area?: string
+          created_at?: string
+          id?: string
+          name: string
+          phone?: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          address?: string
+          area?: string
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string
+          slug?: string
+          sort_order?: number
         }
         Relationships: []
       }
