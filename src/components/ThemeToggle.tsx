@@ -6,8 +6,10 @@ export function ThemeToggle() {
 
   const next = () => {
     const i = THEMES.findIndex((t) => t.key === theme);
-    setTheme(THEMES[(i + 1) % THEMES.length].key as ThemeKey);
+    const target = THEMES[(i + 1) % THEMES.length];
+    if (target) setTheme(target.key as ThemeKey);
   };
+
 
   return (
     <button
