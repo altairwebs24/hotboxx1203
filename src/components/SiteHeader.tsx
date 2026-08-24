@@ -16,6 +16,7 @@ const links = [
 
 export function SiteHeader() {
   const { count } = useCart();
+  const { logo } = useTheme();
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -24,10 +25,11 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4">
         <Link to="/" className="flex items-center gap-2">
           <img
-            src={logo.url}
+            src={logo}
             alt="Hotboxx logo"
             className="size-10 rounded-full object-cover ring-2 ring-primary/60"
           />
+
           <span className="font-display text-xl tracking-wide">
             HOT<span className="flame-text">BOXX</span>
           </span>
