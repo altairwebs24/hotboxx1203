@@ -30,7 +30,7 @@ const DELIVERY_FEE = 30;
 
 function Checkout() {
   const { lines, subtotal, clear } = useCart();
-  const { storeId, store } = useStores();
+  const { storeId } = useStores();
   const { session } = useAuth();
   const navigate = useNavigate();
   const submitGuest = useServerFn(placeOrder);
