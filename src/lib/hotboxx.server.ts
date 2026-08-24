@@ -55,9 +55,19 @@ export async function createOrder(raw: PlaceOrderInput, userId: string | null) {
   const deliveryFee = data.fulfillment === "delivery" ? Number(feeRow?.value ?? 30) : 0;
   const total = subtotal + deliveryFee;
 
+  const { data: store, error: storeError } = await supabaseAdmin
+    .from("stores")
+    .select("id, name, area")
+    .eq("id", data.storeId)
+    .eq("active", true)
+    .maybeSingle();
+  if (storeError) throw new Error(storeError.message);
+  if (!store) throw new Error("Please choose a store to order from");
+
   const { data: order, error: orderError } = await supabaseAdmin
     .from("orders")
     .insert({
+      store_id: store.id,
       user_id: userId,
       customer_name: data.customerName,
       phone: data.phone,
