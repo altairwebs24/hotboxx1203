@@ -8,6 +8,8 @@ import { placeOrder } from "@/lib/orders.functions";
 import { placeOrderAsUser } from "@/lib/admin.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { DrinkUpsell } from "@/components/DrinkUpsell";
+import { StorePicker } from "@/components/StorePicker";
+import { useStores } from "@/lib/stores";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -28,6 +30,7 @@ const DELIVERY_FEE = 30;
 
 function Checkout() {
   const { lines, subtotal, clear } = useCart();
+  const { storeId, store } = useStores();
   const { session } = useAuth();
   const navigate = useNavigate();
   const submitGuest = useServerFn(placeOrder);
@@ -39,7 +42,7 @@ function Checkout() {
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ orderNumber: string; total: number } | null>(null);
+  const [result, setResult] = useState<{ orderNumber: string; total: number; storeName: string } | null>(null);
 
   const deliveryFee = fulfillment === "delivery" ? DELIVERY_FEE : 0;
   const total = subtotal + deliveryFee;
@@ -47,6 +50,10 @@ function Checkout() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (lines.length === 0) return;
+    if (!storeId) {
+      toast.error("Please choose the store you're ordering from");
+      return;
+    }
     if (name.trim().length < 2) {
       toast.error("Please enter your name");
       return;
@@ -63,6 +70,7 @@ function Checkout() {
     setBusy(true);
     try {
       const payload = {
+        storeId,
         customerName: name.trim(),
         phone: phone.trim(),
         fulfillment,
@@ -75,13 +83,13 @@ function Checkout() {
         : await submitGuest({ data: payload });
 
       clear();
-      setResult({ orderNumber: order.orderNumber, total: order.total });
+      setResult({ orderNumber: order.orderNumber, total: order.total, storeName: order.storeName });
       toast.success(`Order placed — your order number is ${order.orderNumber}`);
 
       const summary = order.items
         .map((i) => `${i.quantity}x ${i.name}${i.note ? ` (${i.note})` : ""}`)
         .join("%0A");
-      const message = `Hi Hotboxx! Order *${order.orderNumber}*%0A${summary}%0A${
+      const message = `Hi Hotboxx! Order *${order.orderNumber}*%0AStore: ${order.storeName}%0A${summary}%0A${
         fulfillment === "delivery" ? `Delivery to: ${address.trim()}` : "Collection"
       }%0ATotal: R${order.total}%0AName: ${name.trim()}`;
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
@@ -99,6 +107,9 @@ function Checkout() {
         <h1 className="mt-3 font-display text-5xl flame-text">{result.orderNumber}</h1>
         <p className="mt-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
           This is your order number
+        </p>
+        <p className="mt-3 text-sm font-bold uppercase tracking-widest text-accent">
+          Ordering at {result.storeName}
         </p>
         <p className="mt-4 text-muted-foreground">
           Write it down or screenshot it — you'll need it to track your order and to confirm payment.
@@ -153,6 +164,7 @@ function Checkout() {
 
       <div className="mt-6 grid gap-6 md:grid-cols-[1.2fr_1fr]">
         <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
+          <StorePicker />
           <Field label="Your name">
             <input value={name} onChange={(e) => setName(e.target.value)} maxLength={80} className={inputCls} placeholder="Full name" />
           </Field>

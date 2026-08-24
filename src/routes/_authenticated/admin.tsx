@@ -117,6 +117,7 @@ function Admin() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h2 className="font-display text-2xl">{o.order_number}</h2>
+                  <p className="text-xs font-bold uppercase tracking-wide text-accent">{o.store}</p>
                   <p className="text-xs text-muted-foreground">
                     {new Date(o.created_at).toLocaleString("en-ZA")} • {o.customer_name} • {o.phone}
                   </p>

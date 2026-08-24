@@ -3,6 +3,7 @@ import { Flame, ShoppingBag, Menu as MenuIcon, X } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/hotboxx-logo.jpg.asset.json";
 import { useCart } from "@/lib/cart";
+import { StoreSelect } from "@/components/StorePicker";
 import { WHATSAPP_DISPLAY } from "@/lib/format";
 
 const links = [
@@ -48,6 +49,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          <StoreSelect />
           <a
             href={`https://wa.me/27799155422`}
             target="_blank"
