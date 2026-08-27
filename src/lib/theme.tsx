@@ -1,12 +1,10 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import logoFlame from "@/assets/hotboxx-logo.jpg.asset.json";
 import logoRed from "@/assets/hotboxx-logo-red.jpg.asset.json";
 import logoBlack from "@/assets/hotboxx-logo-black.jpg.asset.json";
 
-export type ThemeKey = "flame" | "red" | "mono";
+export type ThemeKey = "red" | "mono";
 
 export const THEMES: { key: ThemeKey; label: string; logo: string }[] = [
-  { key: "flame", label: "Flame (default)", logo: logoFlame.url },
   { key: "red", label: "Red logo", logo: logoRed.url },
   { key: "mono", label: "Black logo", logo: logoBlack.url },
 ];
