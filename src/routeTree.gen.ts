@@ -18,6 +18,7 @@ import { Route as MenuRouteImport } from './routes/menu'
 import { Route as SpecialsRouteImport } from './routes/specials'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as MenuIdRouteImport } from './routes/menu.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -63,26 +64,33 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const MenuIdRoute = MenuIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MenuRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/menu': typeof MenuRoute
+  '/menu': typeof MenuRouteWithChildren
   '/specials': typeof SpecialsRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/menu/$id': typeof MenuIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/menu': typeof MenuRoute
+  '/menu': typeof MenuRouteWithChildren
   '/specials': typeof SpecialsRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/menu/$id': typeof MenuIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -91,10 +99,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/menu': typeof MenuRoute
+  '/menu': typeof MenuRouteWithChildren
   '/specials': typeof SpecialsRoute
   '/track': typeof TrackRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/menu/$id': typeof MenuIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/specials'
     | '/track'
     | '/admin'
+    | '/menu/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/specials'
     | '/track'
     | '/admin'
+    | '/menu/$id'
   id:
     | '__root__'
     | '/'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/specials'
     | '/track'
     | '/_authenticated/admin'
+    | '/menu/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -136,7 +148,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
-  MenuRoute: typeof MenuRoute
+  MenuRoute: typeof MenuRouteWithChildren
   SpecialsRoute: typeof SpecialsRoute
   TrackRoute: typeof TrackRoute
 }
@@ -206,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/menu/$id': {
+      id: '/menu/$id'
+      path: '/$id'
+      fullPath: '/menu/$id'
+      preLoaderRoute: typeof MenuIdRouteImport
+      parentRoute: typeof MenuRoute
+    }
   }
 }
 
@@ -220,13 +239,23 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface MenuRouteChildren {
+  MenuIdRoute: typeof MenuIdRoute
+}
+
+const MenuRouteChildren: MenuRouteChildren = {
+  MenuIdRoute: MenuIdRoute,
+}
+
+const MenuRouteWithChildren = MenuRoute._addFileChildren(MenuRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
-  MenuRoute: MenuRoute,
+  MenuRoute: MenuRouteWithChildren,
   SpecialsRoute: SpecialsRoute,
   TrackRoute: TrackRoute,
 }
