@@ -115,20 +115,24 @@ function MenuPage() {
                     key={item.id}
                     className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-accent/60"
                   >
-                    {img ? (
-                      <img
-                        src={img}
-                        alt={`${item.name} from the Hotboxx menu`}
-                        loading="lazy"
-                        className="h-28 w-full bg-black object-cover sm:h-36"
-                      />
-                    ) : (
-                      <div className="grid h-28 w-full place-items-center bg-secondary sm:h-36">
-                        <CupSoda className="size-10 text-accent" />
-                      </div>
-                    )}
-                    <div className="flex flex-1 flex-col justify-between p-3 sm:p-4">
-                      <div className="min-w-0">
+                    <Link
+                      to="/menu/$id"
+                      params={{ id: item.id }}
+                      className="flex flex-1 flex-col"
+                    >
+                      {img ? (
+                        <img
+                          src={img}
+                          alt={`${item.name} from the Hotboxx menu`}
+                          loading="lazy"
+                          className="h-28 w-full bg-black object-cover sm:h-36"
+                        />
+                      ) : (
+                        <div className="grid h-28 w-full place-items-center bg-secondary sm:h-36">
+                          <CupSoda className="size-10 text-accent" />
+                        </div>
+                      )}
+                      <div className="min-w-0 p-3 pb-0 sm:p-4 sm:pb-0">
                         <h3 className="text-base leading-tight sm:text-lg">{item.name}</h3>
                         {item.description && (
                           <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
@@ -136,7 +140,10 @@ function MenuPage() {
                           </p>
                         )}
                       </div>
+                    </Link>
+                    <div className="p-3 pt-0 sm:p-4 sm:pt-0">
                       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+
                         <span className="font-display text-lg text-accent sm:text-xl">{ZAR(item.price)}</span>
                         <button
                           onClick={() => {
