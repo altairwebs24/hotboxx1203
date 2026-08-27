@@ -14,10 +14,10 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as MenuRouteImport } from './routes/menu'
 import { Route as SpecialsRouteImport } from './routes/specials'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as MenuIndexRouteImport } from './routes/menu.index'
 import { Route as MenuIdRouteImport } from './routes/menu.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -44,11 +44,6 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MenuRoute = MenuRouteImport.update({
-  id: '/menu',
-  path: '/menu',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SpecialsRoute = SpecialsRouteImport.update({
   id: '/specials',
   path: '/specials',
@@ -64,10 +59,15 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const MenuIndexRoute = MenuIndexRouteImport.update({
+  id: '/menu/',
+  path: '/menu/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MenuIdRoute = MenuIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => MenuRoute,
+  id: '/menu/$id',
+  path: '/menu/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -75,22 +75,22 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/menu': typeof MenuRouteWithChildren
   '/specials': typeof SpecialsRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/menu/$id': typeof MenuIdRoute
+  '/menu/': typeof MenuIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/menu': typeof MenuRouteWithChildren
   '/specials': typeof SpecialsRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/menu/$id': typeof MenuIdRoute
+  '/menu': typeof MenuIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,11 +99,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/menu': typeof MenuRouteWithChildren
   '/specials': typeof SpecialsRoute
   '/track': typeof TrackRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/menu/$id': typeof MenuIdRoute
+  '/menu/': typeof MenuIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,22 +112,22 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
-    | '/menu'
     | '/specials'
     | '/track'
     | '/admin'
     | '/menu/$id'
+    | '/menu/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/cart'
     | '/checkout'
-    | '/menu'
     | '/specials'
     | '/track'
     | '/admin'
     | '/menu/$id'
+    | '/menu'
   id:
     | '__root__'
     | '/'
@@ -135,11 +135,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
-    | '/menu'
     | '/specials'
     | '/track'
     | '/_authenticated/admin'
     | '/menu/$id'
+    | '/menu/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -148,9 +148,10 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
-  MenuRoute: typeof MenuRouteWithChildren
   SpecialsRoute: typeof SpecialsRoute
   TrackRoute: typeof TrackRoute
+  MenuIdRoute: typeof MenuIdRoute
+  MenuIndexRoute: typeof MenuIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -190,13 +191,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/menu': {
-      id: '/menu'
-      path: '/menu'
-      fullPath: '/menu'
-      preLoaderRoute: typeof MenuRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/specials': {
       id: '/specials'
       path: '/specials'
@@ -218,12 +212,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/menu/': {
+      id: '/menu/'
+      path: '/menu'
+      fullPath: '/menu/'
+      preLoaderRoute: typeof MenuIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/menu/$id': {
       id: '/menu/$id'
-      path: '/$id'
+      path: '/menu/$id'
       fullPath: '/menu/$id'
       preLoaderRoute: typeof MenuIdRouteImport
-      parentRoute: typeof MenuRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -239,25 +240,16 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface MenuRouteChildren {
-  MenuIdRoute: typeof MenuIdRoute
-}
-
-const MenuRouteChildren: MenuRouteChildren = {
-  MenuIdRoute: MenuIdRoute,
-}
-
-const MenuRouteWithChildren = MenuRoute._addFileChildren(MenuRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
-  MenuRoute: MenuRouteWithChildren,
   SpecialsRoute: SpecialsRoute,
   TrackRoute: TrackRoute,
+  MenuIdRoute: MenuIdRoute,
+  MenuIndexRoute: MenuIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
