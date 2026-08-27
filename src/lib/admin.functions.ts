@@ -77,12 +77,62 @@ export const adminSaveMenuItem = createServerFn({ method: "POST" })
       available: data.available,
       updated_at: new Date().toISOString(),
     };
-    const { error } = data.id
-      ? await supabaseAdmin.from("menu_items").update(payload).eq("id", data.id)
-      : await supabaseAdmin.from("menu_items").insert(payload);
+    if (data.id) {
+      const { error } = await supabaseAdmin.from("menu_items").update(payload).eq("id", data.id);
+      if (error) throw new Error(error.message);
+      return { ok: true, id: data.id };
+    }
+    const { data: created, error } = await supabaseAdmin
+      .from("menu_items")
+      .insert(payload)
+      .select("id")
+      .single();
+    if (error || !created) throw new Error(error?.message ?? "Could not create item");
+    return { ok: true, id: created.id };
+  });
+
+export const adminAddItemImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({ menuItemId: z.string().uuid(), path: z.string().trim().min(1).max(500) })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { requireAdmin } = await import("./hotboxx.server");
+    await requireAdmin(context.userId, emailOf(context.claims));
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { count } = await supabaseAdmin
+      .from("menu_item_images")
+      .select("id", { count: "exact", head: true })
+      .eq("menu_item_id", data.menuItemId);
+    const { error } = await supabaseAdmin
+      .from("menu_item_images")
+      .insert({ menu_item_id: data.menuItemId, url: data.path, sort_order: count ?? 0 });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const adminDeleteItemImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { requireAdmin } = await import("./hotboxx.server");
+    await requireAdmin(context.userId, emailOf(context.claims));
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
+      .from("menu_item_images")
+      .select("url")
+      .eq("id", data.id)
+      .maybeSingle();
+    const { error } = await supabaseAdmin.from("menu_item_images").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    if (row?.url && !/^https?:\/\//.test(row.url)) {
+      await supabaseAdmin.storage.from("menu-images").remove([row.url]);
+    }
+    return { ok: true };
+  });
+
 
 export const adminDeleteMenuItem = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
