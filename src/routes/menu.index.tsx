@@ -9,7 +9,7 @@ import { itemImage } from "@/lib/menu-images";
 import { ZAR } from "@/lib/format";
 
 
-export const Route = createFileRoute("/menu")({
+export const Route = createFileRoute("/menu/")({
   head: () => ({
     meta: [
       { title: "Menu | Hotboxx Kotas, Burgers, Sandwiches & Combos" },
