@@ -12,10 +12,10 @@ export const THEMES: { key: ThemeKey; label: string; logo: string }[] = [
 const STORAGE_KEY = "hotboxx-theme";
 
 type Ctx = { theme: ThemeKey; setTheme: (t: ThemeKey) => void; logo: string };
-const ThemeContext = createContext<Ctx>({ theme: "flame", setTheme: () => {}, logo: logoFlame.url });
+const ThemeContext = createContext<Ctx>({ theme: "red", setTheme: () => {}, logo: logoRed.url });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeKey>("flame");
+  const [theme, setThemeState] = useState<ThemeKey>("red");
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as ThemeKey | null;
@@ -24,7 +24,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove("theme-flame", "theme-red", "theme-mono");
+    root.classList.remove("theme-red", "theme-mono");
     root.classList.add(`theme-${theme}`);
   }, [theme]);
 
@@ -33,7 +33,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, t);
   };
 
-  const logo = THEMES.find((t) => t.key === theme)?.logo ?? logoFlame.url;
+  const logo = THEMES.find((t) => t.key === theme)?.logo ?? logoRed.url;
 
   return <ThemeContext.Provider value={{ theme, setTheme, logo }}>{children}</ThemeContext.Provider>;
 }
