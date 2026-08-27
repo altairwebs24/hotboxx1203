@@ -65,9 +65,9 @@ const MenuIndexRoute = MenuIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const MenuIdRoute = MenuIdRouteImport.update({
-  id: '/menu/$id',
-  path: '/menu/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MenuRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -150,7 +150,6 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   SpecialsRoute: typeof SpecialsRoute
   TrackRoute: typeof TrackRoute
-  MenuIdRoute: typeof MenuIdRoute
   MenuIndexRoute: typeof MenuIndexRoute
 }
 
@@ -221,10 +220,10 @@ declare module '@tanstack/react-router' {
     }
     '/menu/$id': {
       id: '/menu/$id'
-      path: '/menu/$id'
+      path: '/$id'
       fullPath: '/menu/$id'
       preLoaderRoute: typeof MenuIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof MenuRoute
     }
   }
 }
@@ -248,7 +247,6 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   SpecialsRoute: SpecialsRoute,
   TrackRoute: TrackRoute,
-  MenuIdRoute: MenuIdRoute,
   MenuIndexRoute: MenuIndexRoute,
 }
 export const routeTree = rootRouteImport
