@@ -14,6 +14,7 @@ import {
   getAdminStatus,
 } from "@/lib/admin.functions";
 import { STATUS_LABEL, STATUS_ORDER, ZAR } from "@/lib/format";
+import { MenuItemEditor, type EditableItem } from "@/components/MenuItemEditor";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: Admin,
@@ -30,6 +31,7 @@ function Admin() {
   const removeAdmin = useServerFn(adminRemoveAdminEmail);
   const [tab, setTab] = useState<"orders" | "menu" | "admins">("orders");
   const [newAdmin, setNewAdmin] = useState("");
+  const [editing, setEditing] = useState<EditableItem | null>(null);
 
   const admin = useQuery({ queryKey: ["admin-status"], queryFn: () => status({}) });
   const orders = useQuery({
@@ -46,6 +48,15 @@ function Admin() {
         .from("menu_items")
         .select("id, name, price, available, category_id, description, categories(name)")
         .order("name");
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+  const cats = useQuery({
+    queryKey: ["admin-categories"],
+    enabled: admin.data?.isAdmin === true,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("categories").select("id, name").order("sort_order");
       if (error) throw new Error(error.message);
       return data ?? [];
     },
@@ -169,8 +180,24 @@ function Admin() {
 
       {tab === "menu" && (
         <div className="mt-6 space-y-2">
+          <button
+            onClick={() =>
+              setEditing({ name: "", description: "", price: 0, available: true, category_id: "" })
+            }
+            className="rounded-full flame-bg px-5 py-2.5 text-sm font-bold text-primary-foreground"
+          >
+            + New menu item
+          </button>
+          {editing && !editing.id && (
+            <MenuItemEditor
+              item={editing}
+              categories={cats.data ?? []}
+              onClose={() => setEditing(null)}
+            />
+          )}
           {(menu.data ?? []).map((item) => (
-            <div key={item.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4">
+            <div key={item.id}>
+            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4">
               <div className="min-w-40 flex-1">
                 <p className="font-semibold">{item.name}</p>
                 <p className="text-xs text-muted-foreground">
@@ -228,6 +255,29 @@ function Admin() {
               >
                 {item.available ? "Available" : "Sold out"}
               </button>
+              <button
+                onClick={() =>
+                  setEditing({
+                    id: item.id,
+                    name: item.name,
+                    description: item.description ?? "",
+                    price: Number(item.price),
+                    available: item.available,
+                    category_id: item.category_id,
+                  })
+                }
+                className="rounded-full border border-accent px-4 py-2 text-xs font-bold text-accent"
+              >
+                Edit & photos
+              </button>
+            </div>
+              {editing?.id === item.id && (
+                <MenuItemEditor
+                  item={editing}
+                  categories={cats.data ?? []}
+                  onClose={() => setEditing(null)}
+                />
+              )}
             </div>
           ))}
         </div>

@@ -38,7 +38,7 @@ type ItemRow = {
 
 function ItemPage() {
   const { id } = Route.useParams();
-  const { add } = useCart();
+  const { add, setNote: setLineNote } = useCart();
   const [qty, setQty] = useState(1);
   const [note, setNote] = useState("");
   const [shot, setShot] = useState(0);
@@ -137,7 +137,8 @@ function ItemPage() {
           <button
             disabled={!data.available}
             onClick={() => {
-              for (let i = 0; i < qty; i++) add({ id: data.id, name: data.name, price: data.price, note });
+              for (let i = 0; i < qty; i++) add({ id: data.id, name: data.name, price: data.price });
+              if (note.trim()) setLineNote(data.id, note.trim());
               toast.success(`${qty}× ${data.name} added to cart`);
             }}
             className="flex-1 rounded-full flame-bg px-5 py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"
