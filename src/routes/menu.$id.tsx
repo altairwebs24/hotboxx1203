@@ -5,8 +5,7 @@ import { ArrowLeft, CupSoda, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
-import { itemImage } from "@/lib/menu-images";
-import { fetchItemPhotos } from "@/lib/item-photos";
+import { fetchItemGallery } from "@/lib/product-photos";
 import { ZAR } from "@/lib/format";
 
 export const Route = createFileRoute("/menu/$id")({
@@ -56,14 +55,14 @@ function ItemPage() {
     },
   });
 
+  const data = item.data;
   const photos = useQuery({
-    queryKey: ["menu-item-photos", id],
-    queryFn: () => fetchItemPhotos(id),
+    queryKey: ["menu-item-gallery", id, data?.categories?.slug ?? "", data?.sort_order ?? 0],
+    enabled: Boolean(data),
+    queryFn: () => fetchItemGallery(id, data?.categories?.slug, data?.sort_order),
   });
 
-  const data = item.data;
-  const flyer = data ? itemImage(data.categories?.slug, data.sort_order) : null;
-  const gallery = [...(photos.data ?? []).map((p) => p.src), ...(flyer ? [flyer] : [])];
+  const gallery = (photos.data ?? []).map((p) => p.src);
   const active = gallery[Math.min(shot, Math.max(gallery.length - 1, 0))];
 
   if (item.isLoading) return <p className="p-10 text-center text-sm text-muted-foreground">Loading…</p>;

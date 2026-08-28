@@ -4,7 +4,7 @@ import { Flame, Truck, Timer, ShieldCheck, Plus, ArrowRight } from "lucide-react
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
-import { itemImage } from "@/lib/menu-images";
+import { coverSrc, fetchCoverMap } from "@/lib/product-photos";
 import { useSiteImages } from "@/lib/site-images";
 import { ZAR, WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "@/lib/format";
 
@@ -39,6 +39,8 @@ type Featured = { id: string; name: string; price: number; slug: string; sort_or
 function Home() {
   const { add } = useCart();
   const siteImages = useSiteImages();
+  const covers = useQuery({ queryKey: ["cover-map"], queryFn: fetchCoverMap, staleTime: 60_000 });
+
 
   const { data: featured } = useQuery({
     queryKey: ["featured"],
@@ -167,7 +169,7 @@ function Home() {
 
         <div className="mt-5 grid gap-3 grid-cols-2 lg:grid-cols-4">
           {(featured ?? []).map((item) => {
-            const img = itemImage(item.slug, item.sort_order);
+            const img = coverSrc(covers.data?.[item.id], item.slug, item.sort_order);
             return (
               <div key={item.id} className="overflow-hidden rounded-2xl border border-border bg-card">
                 {img && (
