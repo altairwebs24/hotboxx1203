@@ -102,13 +102,18 @@ export const adminAddItemImage = createServerFn({ method: "POST" })
     const { requireAdmin } = await import("./hotboxx.server");
     await requireAdmin(context.userId, emailOf(context.claims));
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { count } = await supabaseAdmin
+    // Newest upload becomes the cover photo: place it before every existing image.
+    const { data: first } = await supabaseAdmin
       .from("menu_item_images")
-      .select("id", { count: "exact", head: true })
-      .eq("menu_item_id", data.menuItemId);
+      .select("sort_order")
+      .eq("menu_item_id", data.menuItemId)
+      .order("sort_order", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    const nextOrder = first ? Number(first.sort_order) - 1 : 0;
     const { error } = await supabaseAdmin
       .from("menu_item_images")
-      .insert({ menu_item_id: data.menuItemId, url: data.path, sort_order: count ?? 0 });
+      .insert({ menu_item_id: data.menuItemId, url: data.path, sort_order: nextOrder });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
