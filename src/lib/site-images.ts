@@ -18,11 +18,11 @@ export type SiteImageKey =
 
 export const SITE_IMAGES: { key: SiteImageKey; label: string; hint: string; fallback: string }[] = [
   { key: "hero", label: "Hero image", hint: "Big image at the top of the home page", fallback: heroAsset.url },
-  { key: "hero_badge", label: "Hero corner photo", hint: "Small photo overlapping the hero", fallback: deco.kotaWings },
-  { key: "deco_1", label: "Gallery photo 1", hint: "Home page photo strip", fallback: deco.kotaNuggets },
-  { key: "deco_2", label: "Gallery photo 2", hint: "Home page photo strip", fallback: deco.noahsArk },
-  { key: "deco_3", label: "Gallery photo 3", hint: "Home page photo strip", fallback: deco.staff },
-  { key: "deco_4", label: "Gallery photo 4", hint: "Home page photo strip", fallback: deco.menuBoard },
+  { key: "hero_badge", label: "Hero corner photo", hint: "Small photo overlapping the hero", fallback: deco.kotaWings ?? heroAsset.url },
+  { key: "deco_1", label: "Gallery photo 1", hint: "Home page photo strip", fallback: deco.kotaNuggets ?? heroAsset.url },
+  { key: "deco_2", label: "Gallery photo 2", hint: "Home page photo strip", fallback: deco.noahsArk ?? heroAsset.url },
+  { key: "deco_3", label: "Gallery photo 3", hint: "Home page photo strip", fallback: deco.staff ?? heroAsset.url },
+  { key: "deco_4", label: "Gallery photo 4", hint: "Home page photo strip", fallback: deco.menuBoard ?? heroAsset.url },
   { key: "drinks", label: "Drinks banner", hint: "Image next to the fizzy drinks section", fallback: drinksAsset.url },
 ];
 
