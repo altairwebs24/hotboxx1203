@@ -2,11 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, Truck, Timer, ShieldCheck, Plus, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
-import hero from "@/assets/hero-kota.jpg.asset.json";
-import drinksImg from "@/assets/drinks.jpg.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
-import { deco, itemImage } from "@/lib/menu-images";
+import { itemImage } from "@/lib/menu-images";
+import { useSiteImages } from "@/lib/site-images";
 import { ZAR, WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
@@ -39,6 +38,7 @@ type Featured = { id: string; name: string; price: number; slug: string; sort_or
 
 function Home() {
   const { add } = useCart();
+  const siteImages = useSiteImages();
 
   const { data: featured } = useQuery({
     queryKey: ["featured"],
@@ -99,12 +99,12 @@ function Home() {
           </div>
           <div className="relative">
             <img
-              src={hero.url}
+              src={siteImages.hero}
               alt="Hotboxx Noah's Ark kota meal for two"
               className="w-full rounded-3xl border border-border object-cover shadow-2xl"
             />
             <img
-              src={deco.kotaWings}
+              src={siteImages.hero_badge}
               alt="Hotboxx kota served with crispy wings"
               className="absolute -bottom-8 -right-4 hidden w-40 rotate-3 rounded-2xl border-2 border-background object-cover shadow-2xl md:block"
             />
@@ -134,10 +134,10 @@ function Home() {
       <section className="mx-auto mt-14 max-w-6xl px-4">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
-            { src: deco.kotaNuggets, alt: "Hotboxx kota with golden chicken nuggets" },
-            { src: deco.noahsArk, alt: "The Noah's Ark kota, a meal for two" },
-            { src: deco.staff, alt: "Hotboxx team member serving a fresh kota" },
-            { src: deco.menuBoard, alt: "A packed Hotboxx order in front of the menu board" },
+            { src: siteImages.deco_1, alt: "Hotboxx kota with golden chicken nuggets" },
+            { src: siteImages.deco_2, alt: "The Noah's Ark kota, a meal for two" },
+            { src: siteImages.deco_3, alt: "Hotboxx team member serving a fresh kota" },
+            { src: siteImages.deco_4, alt: "A packed Hotboxx order in front of the menu board" },
           ].map((d) => (
             <img
               key={d.alt}
@@ -203,7 +203,7 @@ function Home() {
 
       <section className="mx-auto mt-16 max-w-6xl px-4">
         <div className="grid items-center gap-8 overflow-hidden rounded-3xl border border-border bg-card md:grid-cols-2">
-          <img src={drinksImg.url} alt="Hotboxx fizzy drinks" className="h-full w-full object-cover" />
+          <img src={siteImages.drinks} alt="Hotboxx fizzy drinks" className="h-full w-full object-cover" />
           <div className="p-8">
             <h2 className="text-3xl">ICE COLD FIZZY DRINKS</h2>
             <p className="mt-2 text-muted-foreground">
