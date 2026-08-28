@@ -84,31 +84,41 @@ export async function fetchItemGallery(
   return buildGallery(uploads, builtInPhotos(slug, sortOrder), prefs);
 }
 
-/** One batched lookup of admin-chosen covers for every item (uploads + saved choices). */
-export async function fetchCoverMap(): Promise<Record<string, string>> {
+export type CoverInfo = { uploadSrc?: string; cover: string | null };
+
+/** One batched lookup of covers for every item (uploads + saved admin choices). */
+export async function fetchCoverMap(): Promise<Record<string, CoverInfo>> {
   const [imgs, prefs] = await Promise.all([
     supabase.from("menu_item_images").select("id, menu_item_id, url, sort_order").order("sort_order"),
     supabase.from("settings").select("key, value").like("key", `${ITEM_PREFS_PREFIX}%`),
   ]);
   const rows = imgs.data ?? [];
-  if (rows.length === 0) return {};
   const { resolvePhotoUrls } = await import("./item-photos");
-  const urls = await resolvePhotoUrls(rows.map((r) => r.url));
-  const prefsByItem: Record<string, ItemPrefs> = {};
+  const urls = rows.length > 0 ? await resolvePhotoUrls(rows.map((r) => r.url)) : {};
+
+  const out: Record<string, CoverInfo> = {};
   for (const p of prefs.data ?? []) {
-    prefsByItem[p.key.slice(ITEM_PREFS_PREFIX.length)] = parsePrefs(p.value);
+    out[p.key.slice(ITEM_PREFS_PREFIX.length)] = { cover: parsePrefs(p.value).cover };
   }
-  const out: Record<string, string> = {};
   for (const r of rows) {
     const src = urls[r.url];
     if (!src) continue;
-    const chosen = prefsByItem[r.menu_item_id]?.cover;
-    if (chosen === `up:${r.id}`) out[r.menu_item_id] = src;
-    else if (!out[r.menu_item_id]) out[r.menu_item_id] = src;
-  }
-  // A built-in photo explicitly picked as the cover wins over uploads.
-  for (const [itemId, p] of Object.entries(prefsByItem)) {
-    if (p.cover && !p.cover.startsWith("up:")) delete out[itemId];
+    const info = (out[r.menu_item_id] ??= { cover: null });
+    if (info.cover === `up:${r.id}` || (!info.uploadSrc && !info.cover)) info.uploadSrc = src;
   }
   return out;
+}
+
+/** Resolves the single image to show on a menu card. */
+export function coverSrc(
+  info: CoverInfo | undefined,
+  slug?: string | null,
+  sortOrder?: number | null,
+): string | null {
+  const builtIn = builtInPhotos(slug, sortOrder);
+  if (info?.cover) {
+    const picked = builtIn.find((b) => b.token === info.cover);
+    if (picked) return picked.src;
+  }
+  return info?.uploadSrc ?? builtIn[0]?.src ?? null;
 }
