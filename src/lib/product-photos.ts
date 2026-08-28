@@ -83,3 +83,32 @@ export async function fetchItemGallery(
   const [uploads, prefs] = await Promise.all([fetchItemPhotos(itemId), fetchItemPrefs(itemId)]);
   return buildGallery(uploads, builtInPhotos(slug, sortOrder), prefs);
 }
+
+/** One batched lookup of admin-chosen covers for every item (uploads + saved choices). */
+export async function fetchCoverMap(): Promise<Record<string, string>> {
+  const [imgs, prefs] = await Promise.all([
+    supabase.from("menu_item_images").select("id, menu_item_id, url, sort_order").order("sort_order"),
+    supabase.from("settings").select("key, value").like("key", `${ITEM_PREFS_PREFIX}%`),
+  ]);
+  const rows = imgs.data ?? [];
+  if (rows.length === 0) return {};
+  const { resolvePhotoUrls } = await import("./item-photos");
+  const urls = await resolvePhotoUrls(rows.map((r) => r.url));
+  const prefsByItem: Record<string, ItemPrefs> = {};
+  for (const p of prefs.data ?? []) {
+    prefsByItem[p.key.slice(ITEM_PREFS_PREFIX.length)] = parsePrefs(p.value);
+  }
+  const out: Record<string, string> = {};
+  for (const r of rows) {
+    const src = urls[r.url];
+    if (!src) continue;
+    const chosen = prefsByItem[r.menu_item_id]?.cover;
+    if (chosen === `up:${r.id}`) out[r.menu_item_id] = src;
+    else if (!out[r.menu_item_id]) out[r.menu_item_id] = src;
+  }
+  // A built-in photo explicitly picked as the cover wins over uploads.
+  for (const [itemId, p] of Object.entries(prefsByItem)) {
+    if (p.cover && !p.cover.startsWith("up:")) delete out[itemId];
+  }
+  return out;
+}
