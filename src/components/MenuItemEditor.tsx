@@ -1,19 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Star, Trash2, X } from "lucide-react";
+import { ImagePlus, Loader2, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { adminAddItemImage, adminDeleteItemImage, adminSaveMenuItem } from "@/lib/admin.functions";
 import { fetchItemPhotos, MENU_BUCKET } from "@/lib/item-photos";
-import { adminSaveSetting } from "@/lib/admin.functions";
-import {
-  buildGallery,
-  builtInPhotos,
-  fetchItemPrefs,
-  ITEM_PREFS_PREFIX,
-  type ItemPrefs,
-} from "@/lib/product-photos";
 
 export type EditableItem = {
   id?: string;
@@ -22,8 +14,6 @@ export type EditableItem = {
   price: number;
   available: boolean;
   category_id: string;
-  category_slug?: string | null;
-  sort_order?: number | null;
 };
 
 export function MenuItemEditor({
@@ -39,32 +29,12 @@ export function MenuItemEditor({
   const save = useServerFn(adminSaveMenuItem);
   const addImage = useServerFn(adminAddItemImage);
   const deleteImage = useServerFn(adminDeleteItemImage);
-  const saveSetting = useServerFn(adminSaveSetting);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState<EditableItem>(item);
   const [itemId, setItemId] = useState<string | undefined>(item.id);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
-
-  const prefs = useQuery({
-    queryKey: ["admin-item-prefs", itemId],
-    enabled: Boolean(itemId),
-    queryFn: () => fetchItemPrefs(itemId as string),
-  });
-
-  const savePrefs = async (next: ItemPrefs) => {
-    if (!itemId) return;
-    try {
-      await saveSetting({ data: { key: `${ITEM_PREFS_PREFIX}${itemId}`, value: JSON.stringify(next) } });
-      qc.setQueryData(["admin-item-prefs", itemId], next);
-      qc.invalidateQueries({ queryKey: ["cover-map"] });
-      qc.invalidateQueries({ queryKey: ["menu-item-gallery", itemId] });
-      toast.success("Photo settings saved");
-    } catch {
-      toast.error("Could not save photo settings");
-    }
-  };
 
   const photos = useQuery({
     queryKey: ["admin-item-photos", itemId],
@@ -121,8 +91,7 @@ export function MenuItemEditor({
       }
       toast.success("Photos uploaded");
       qc.invalidateQueries({ queryKey: ["admin-item-photos", id] });
-      qc.invalidateQueries({ queryKey: ["cover-map"] });
-      qc.invalidateQueries({ queryKey: ["menu-item-gallery", id] });
+      qc.invalidateQueries({ queryKey: ["menu-item-photos", id] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
     } finally {
