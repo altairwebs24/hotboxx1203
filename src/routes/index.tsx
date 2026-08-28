@@ -39,6 +39,8 @@ type Featured = { id: string; name: string; price: number; slug: string; sort_or
 function Home() {
   const { add } = useCart();
   const siteImages = useSiteImages();
+  const covers = useQuery({ queryKey: ["cover-map"], queryFn: fetchCoverMap, staleTime: 60_000 });
+
 
   const { data: featured } = useQuery({
     queryKey: ["featured"],
