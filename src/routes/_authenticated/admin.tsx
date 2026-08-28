@@ -15,6 +15,7 @@ import {
 } from "@/lib/admin.functions";
 import { STATUS_LABEL, STATUS_ORDER, ZAR } from "@/lib/format";
 import { MenuItemEditor, type EditableItem } from "@/components/MenuItemEditor";
+import { SiteImagesEditor } from "@/components/SiteImagesEditor";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: Admin,
@@ -29,7 +30,7 @@ function Admin() {
   const listAdmins = useServerFn(adminListAdminEmails);
   const addAdmin = useServerFn(adminAddAdminEmail);
   const removeAdmin = useServerFn(adminRemoveAdminEmail);
-  const [tab, setTab] = useState<"orders" | "menu" | "admins">("orders");
+  const [tab, setTab] = useState<"orders" | "menu" | "images" | "admins">("orders");
   const [newAdmin, setNewAdmin] = useState("");
   const [editing, setEditing] = useState<EditableItem | null>(null);
 
@@ -105,7 +106,7 @@ function Admin() {
       </div>
 
       <div className="mt-5 flex gap-2">
-        {(["orders", "menu", "admins"] as const).map((t) => (
+        {(["orders", "menu", "images", "admins"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -282,6 +283,8 @@ function Admin() {
           ))}
         </div>
       )}
+
+      {tab === "images" && <SiteImagesEditor />}
 
       {tab === "admins" && (
         <div className="mt-6 max-w-xl space-y-3">
