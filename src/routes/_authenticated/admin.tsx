@@ -62,6 +62,20 @@ function Admin() {
       return data ?? [];
     },
   });
+
+  const groups = (() => {
+    const items = menu.data ?? [];
+    const known = (cats.data ?? []).map((c) => ({
+      id: c.id,
+      name: c.name,
+      items: items.filter((i) => i.category_id === c.id),
+    }));
+    const orphan = items.filter((i) => !(cats.data ?? []).some((c) => c.id === i.category_id));
+    return [
+      ...known.filter((g) => g.items.length > 0),
+      ...(orphan.length > 0 ? [{ id: "other", name: "Other", items: orphan }] : []),
+    ];
+  })();
   const admins = useQuery({
     queryKey: ["admin-emails"],
     queryFn: () => listAdmins({}),
