@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { itemImage } from "@/lib/menu-images";
 import { useSiteImages } from "@/lib/site-images";
+import { useCovers, useHiddenDefaults } from "@/lib/default-images";
 import { ZAR, WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
@@ -39,6 +40,8 @@ type Featured = { id: string; name: string; price: number; slug: string; sort_or
 function Home() {
   const { add } = useCart();
   const siteImages = useSiteImages();
+  const covers = useCovers();
+  const hiddenDefaults = useHiddenDefaults();
 
   const { data: featured } = useQuery({
     queryKey: ["featured"],
@@ -190,7 +193,8 @@ function Home() {
 
         <div className="mt-5 grid gap-3 grid-cols-2 lg:grid-cols-4">
           {(featured ?? []).map((item) => {
-            const img = itemImage(item.slug, item.sort_order);
+            const img =
+              covers[item.id] ?? (hiddenDefaults.has(item.id) ? null : itemImage(item.slug, item.sort_order));
             return (
               <div key={item.id} className="overflow-hidden rounded-2xl border border-border bg-card">
                 {img && (
@@ -262,7 +266,7 @@ function Home() {
         <div className="grid items-center gap-8 overflow-hidden rounded-3xl border border-border bg-card md:grid-cols-2">
           <img src={siteImages.drinks} alt="Hotboxx fizzy drinks" className="h-full w-full object-cover" />
           <div className="p-8">
-            <h2 className="text-3xl">ICE COLD FIZZY DRINKS</h2>
+            <h2 className="text-3xl">REFRESHMENTS</h2>
             <p className="mt-2 text-muted-foreground">
               R17 each — or grab one for R10 with the current special when you buy any kota, burger
               or sandwich.
