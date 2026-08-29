@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Flame, Truck, Timer, ShieldCheck, Plus, ArrowRight } from "lucide-react";
+import { Flame, Truck, Timer, ShieldCheck, Plus, ArrowRight, CupSoda } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
@@ -62,6 +62,29 @@ function Home() {
       return FEATURED.map((f) => rows.find((r) => r.slug === f.slug && r.name === f.name)).filter(
         Boolean,
       ) as Featured[];
+    },
+  });
+
+  const { data: milkshakes } = useQuery({
+    queryKey: ["milkshakes"],
+    queryFn: async (): Promise<{ id: string; name: string; price: number }[]> => {
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("id, name, price, sort_order, categories!inner(slug)")
+        .eq("categories.slug", "drinks")
+        .eq("available", true)
+        .ilike("name", "%milkshake%")
+        .order("sort_order");
+      if (error) throw new Error(error.message);
+      const seen = new Set<string>();
+      return (data ?? [])
+        .map((d) => ({ id: d.id, name: d.name, price: Number(d.price) }))
+        .filter((d) => {
+          const key = d.name.toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
     },
   });
 
@@ -200,6 +223,40 @@ function Home() {
           See the full menu <ArrowRight className="size-4" />
         </Link>
       </section>
+
+      {/* Milkshakes */}
+      {(milkshakes ?? []).length > 0 && (
+        <section className="mx-auto mt-16 max-w-6xl px-4">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-3xl">THICK <span className="flame-text">MILKSHAKES</span></h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Creamy shakes — only R10 with any kota, burger or sandwich on the current special.
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {(milkshakes ?? []).map((m) => (
+              <div key={m.id} className="rounded-2xl border border-border bg-card p-4">
+                <CupSoda className="size-6 text-accent" />
+                <h3 className="mt-3 text-base leading-tight">{m.name}</h3>
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <span className="font-display text-lg text-accent">{ZAR(m.price)}</span>
+                  <button
+                    onClick={() => {
+                      add({ id: m.id, name: m.name, price: m.price });
+                      toast.success(`${m.name} added to cart`);
+                    }}
+                    className="inline-flex items-center gap-1 rounded-full flame-bg px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                  >
+                    <Plus className="size-3.5" /> Add
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto mt-16 max-w-6xl px-4">
         <div className="grid items-center gap-8 overflow-hidden rounded-3xl border border-border bg-card md:grid-cols-2">
