@@ -201,6 +201,40 @@ function Home() {
         </Link>
       </section>
 
+      {/* Milkshakes */}
+      {(milkshakes ?? []).length > 0 && (
+        <section className="mx-auto mt-16 max-w-6xl px-4">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-3xl">THICK <span className="flame-text">MILKSHAKES</span></h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Creamy shakes — only R10 with any kota, burger or sandwich on the current special.
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {(milkshakes ?? []).map((m) => (
+              <div key={m.id} className="rounded-2xl border border-border bg-card p-4">
+                <CupSoda className="size-6 text-accent" />
+                <h3 className="mt-3 text-base leading-tight">{m.name}</h3>
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <span className="font-display text-lg text-accent">{ZAR(m.price)}</span>
+                  <button
+                    onClick={() => {
+                      add({ id: m.id, name: m.name, price: m.price });
+                      toast.success(`${m.name} added to cart`);
+                    }}
+                    className="inline-flex items-center gap-1 rounded-full flame-bg px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                  >
+                    <Plus className="size-3.5" /> Add
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="mx-auto mt-16 max-w-6xl px-4">
         <div className="grid items-center gap-8 overflow-hidden rounded-3xl border border-border bg-card md:grid-cols-2">
           <img src={siteImages.drinks} alt="Hotboxx fizzy drinks" className="h-full w-full object-cover" />
