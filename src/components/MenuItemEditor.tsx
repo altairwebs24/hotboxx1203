@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Trash2, X } from "lucide-react";
+import { ImageOff, ImagePlus, Loader2, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { adminAddItemImage, adminDeleteItemImage, adminSaveMenuItem } from "@/lib/admin.functions";
+import { adminAddItemImage, adminDeleteItemImage, adminSaveMenuItem, adminSaveSetting } from "@/lib/admin.functions";
+import { NO_DEFAULT_PREFIX, fetchHiddenDefaults } from "@/lib/default-images";
 import { fetchItemPhotos, MENU_BUCKET } from "@/lib/item-photos";
 
 export type EditableItem = {
@@ -29,12 +30,32 @@ export function MenuItemEditor({
   const save = useServerFn(adminSaveMenuItem);
   const addImage = useServerFn(adminAddItemImage);
   const deleteImage = useServerFn(adminDeleteItemImage);
+  const saveSetting = useServerFn(adminSaveSetting);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState<EditableItem>(item);
   const [itemId, setItemId] = useState<string | undefined>(item.id);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  const hidden = useQuery({ queryKey: ["hidden-default-images"], queryFn: fetchHiddenDefaults });
+  const defaultHidden = Boolean(itemId && (hidden.data ?? []).includes(itemId));
+
+  const toggleDefault = async () => {
+    if (!itemId) {
+      toast.error("Save the item first");
+      return;
+    }
+    try {
+      await saveSetting({
+        data: { key: `${NO_DEFAULT_PREFIX}${itemId}`, value: defaultHidden ? "0" : "1" },
+      });
+      qc.invalidateQueries({ queryKey: ["hidden-default-images"] });
+      toast.success(defaultHidden ? "Default photo restored" : "Default photo removed");
+    } catch {
+      toast.error("Could not update the default photo");
+    }
+  };
 
   const photos = useQuery({
     queryKey: ["admin-item-photos", itemId],
@@ -208,8 +229,16 @@ export function MenuItemEditor({
           className="hidden"
           onChange={(e) => e.target.files && e.target.files.length > 0 && upload(e.target.files)}
         />
+        <button
+          onClick={toggleDefault}
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs font-bold"
+        >
+          <ImageOff className="size-3.5" />
+          {defaultHidden ? "Restore default menu photo" : "Remove default menu photo"}
+        </button>
         <p className="mt-2 text-[11px] text-muted-foreground">
-          Upload one or more photos (max 10MB each). The first photo shows on the item page.
+          Upload one or more photos (max 10MB each). The first photo shows on the item page. The
+          default photo is the crop from the printed menu flyer.
         </p>
       </div>
 

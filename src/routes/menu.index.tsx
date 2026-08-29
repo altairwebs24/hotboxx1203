@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { itemImage } from "@/lib/menu-images";
+import { useCovers, useHiddenDefaults } from "@/lib/default-images";
 import { ZAR } from "@/lib/format";
 
 
@@ -39,6 +40,8 @@ function MenuPage() {
   const { add } = useCart();
   const [q, setQ] = useState("");
   const [active, setActive] = useState<string>("all");
+  const covers = useCovers();
+  const hiddenDefaults = useHiddenDefaults();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["menu"],
@@ -109,7 +112,8 @@ function MenuPage() {
             <h2 className="text-2xl">{cat.name}</h2>
             <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
               {cat.menu_items.map((item) => {
-                const img = itemImage(cat.slug, item.sort_order);
+                const img =
+                  covers[item.id] ?? (hiddenDefaults.has(item.id) ? null : itemImage(cat.slug, item.sort_order));
                 return (
                   <div
                     key={item.id}
