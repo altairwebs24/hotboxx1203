@@ -33,6 +33,7 @@ function Admin() {
   const [tab, setTab] = useState<"orders" | "menu" | "images" | "admins">("orders");
   const [newAdmin, setNewAdmin] = useState("");
   const [editing, setEditing] = useState<EditableItem | null>(null);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const admin = useQuery({ queryKey: ["admin-status"], queryFn: () => status({}) });
   const orders = useQuery({
