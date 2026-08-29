@@ -125,7 +125,7 @@ function MenuPage() {
                           src={img}
                           alt={`${item.name} from the Hotboxx menu`}
                           loading="lazy"
-                          className="h-28 w-full bg-black object-cover sm:h-36"
+                          className="h-28 w-full bg-black object-contain sm:h-36"
                         />
                       ) : (
                         <div className="grid h-28 w-full place-items-center bg-secondary sm:h-36">

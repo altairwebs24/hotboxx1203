@@ -33,6 +33,7 @@ function Admin() {
   const [tab, setTab] = useState<"orders" | "menu" | "images" | "admins">("orders");
   const [newAdmin, setNewAdmin] = useState("");
   const [editing, setEditing] = useState<EditableItem | null>(null);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const admin = useQuery({ queryKey: ["admin-status"], queryFn: () => status({}) });
   const orders = useQuery({
@@ -62,6 +63,20 @@ function Admin() {
       return data ?? [];
     },
   });
+
+  const groups = (() => {
+    const items = menu.data ?? [];
+    const known = (cats.data ?? []).map((c) => ({
+      id: c.id,
+      name: c.name,
+      items: items.filter((i) => i.category_id === c.id),
+    }));
+    const orphan = items.filter((i) => !(cats.data ?? []).some((c) => c.id === i.category_id));
+    return [
+      ...known.filter((g) => g.items.length > 0),
+      ...(orphan.length > 0 ? [{ id: "other", name: "Other", items: orphan }] : []),
+    ];
+  })();
   const admins = useQuery({
     queryKey: ["admin-emails"],
     queryFn: () => listAdmins({}),
@@ -196,14 +211,27 @@ function Admin() {
               onClose={() => setEditing(null)}
             />
           )}
-          {(menu.data ?? []).map((item) => (
+          {groups.map((group) => (
+            <section key={group.id} className="pt-4">
+              <button
+                onClick={() =>
+                  setCollapsed((c) => ({ ...c, [group.id]: !c[group.id] }))
+                }
+                className="mb-2 flex w-full items-center justify-between rounded-2xl border border-accent/40 bg-accent/10 px-4 py-2.5 text-left"
+              >
+                <span className="font-display text-xl uppercase tracking-wide">{group.name}</span>
+                <span className="text-xs font-bold text-muted-foreground">
+                  {group.items.length} item{group.items.length === 1 ? "" : "s"} •{" "}
+                  {collapsed[group.id] ? "Show" : "Hide"}
+                </span>
+              </button>
+              {!collapsed[group.id] && (
+                <div className="space-y-2">
+          {group.items.map((item) => (
             <div key={item.id}>
             <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4">
               <div className="min-w-40 flex-1">
                 <p className="font-semibold">{item.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {(item.categories as { name: string } | null)?.name}
-                </p>
               </div>
               <input
                 type="number"
@@ -280,6 +308,10 @@ function Admin() {
                 />
               )}
             </div>
+          ))}
+                </div>
+              )}
+            </section>
           ))}
         </div>
       )}

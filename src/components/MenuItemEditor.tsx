@@ -174,7 +174,7 @@ export function MenuItemEditor({
         <div className="mt-2 flex flex-wrap gap-3">
           {(photos.data ?? []).map((p) => (
             <div key={p.id} className="relative size-24 overflow-hidden rounded-xl border border-border">
-              <img src={p.src} alt="Menu item" className="size-full object-cover" />
+              <img src={p.src} alt="Menu item" className="size-full bg-black object-contain" />
               <button
                 aria-label="Delete photo"
                 onClick={async () => {

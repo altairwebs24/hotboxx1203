@@ -85,7 +85,7 @@ function ItemPage() {
 
       <div className="mt-4 overflow-hidden rounded-3xl border border-border bg-card">
         {active ? (
-          <img src={active} alt={`${data.name} at Hotboxx`} className="h-64 w-full bg-black object-cover sm:h-80" />
+          <img src={active} alt={`${data.name} at Hotboxx`} className="h-64 w-full bg-black object-contain sm:h-80" />
         ) : (
           <div className="grid h-64 w-full place-items-center bg-secondary sm:h-80">
             <CupSoda className="size-14 text-accent" />
@@ -101,7 +101,7 @@ function ItemPage() {
                   i === shot ? "border-accent" : "border-border"
                 }`}
               >
-                <img src={src} alt={`${data.name} photo ${i + 1}`} className="size-full object-cover" loading="lazy" />
+                <img src={src} alt={`${data.name} photo ${i + 1}`} className="size-full bg-black object-contain" loading="lazy" />
               </button>
             ))}
           </div>
