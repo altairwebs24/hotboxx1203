@@ -65,6 +65,29 @@ function Home() {
     },
   });
 
+  const { data: milkshakes } = useQuery({
+    queryKey: ["milkshakes"],
+    queryFn: async (): Promise<{ id: string; name: string; price: number }[]> => {
+      const { data, error } = await supabase
+        .from("menu_items")
+        .select("id, name, price, sort_order, categories!inner(slug)")
+        .eq("categories.slug", "drinks")
+        .eq("available", true)
+        .ilike("name", "%milkshake%")
+        .order("sort_order");
+      if (error) throw new Error(error.message);
+      const seen = new Set<string>();
+      return (data ?? [])
+        .map((d) => ({ id: d.id, name: d.name, price: Number(d.price) }))
+        .filter((d) => {
+          const key = d.name.toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+    },
+  });
+
   return (
     <div>
       <section className="relative overflow-hidden">
