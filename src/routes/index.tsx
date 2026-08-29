@@ -196,12 +196,23 @@ function Home() {
             const img =
               covers[item.id] ?? (hiddenDefaults.has(item.id) ? null : itemImage(item.slug, item.sort_order));
             return (
-              <div key={item.id} className="overflow-hidden rounded-2xl border border-border bg-card">
-                {img && (
-                  <img src={img} alt={item.name} loading="lazy" className="h-32 w-full bg-black object-cover sm:h-40" />
-                )}
-                <div className="p-3">
-                  <h3 className="text-base leading-tight">{item.name}</h3>
+              <div
+                key={item.id}
+                className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-accent/60"
+              >
+                <Link
+                  to="/menu/$id"
+                  params={{ id: item.id }}
+                  className="flex flex-1 flex-col transition-transform active:scale-[0.98]"
+                >
+                  {img && (
+                    <img src={img} alt={item.name} loading="lazy" className="h-32 w-full bg-black object-cover sm:h-40" />
+                  )}
+                  <div className="p-3 pb-0">
+                    <h3 className="text-base leading-tight">{item.name}</h3>
+                  </div>
+                </Link>
+                <div className="p-3 pt-0">
                   <div className="mt-3 flex items-center justify-between gap-2">
                     <span className="font-display text-lg text-accent">{ZAR(item.price)}</span>
                     <button
