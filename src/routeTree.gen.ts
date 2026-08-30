@@ -14,7 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as SpecialsRouteImport } from './routes/specials'
+import { Route as RefreshmentsRouteImport } from './routes/refreshments'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as MenuIndexRouteImport } from './routes/menu.index'
@@ -44,9 +44,9 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SpecialsRoute = SpecialsRouteImport.update({
-  id: '/specials',
-  path: '/specials',
+const RefreshmentsRoute = RefreshmentsRouteImport.update({
+  id: '/refreshments',
+  path: '/refreshments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackRoute = TrackRouteImport.update({
@@ -75,7 +75,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/specials': typeof SpecialsRoute
+  '/refreshments': typeof RefreshmentsRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/menu/$id': typeof MenuIdRoute
@@ -86,7 +86,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/specials': typeof SpecialsRoute
+  '/refreshments': typeof RefreshmentsRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/menu/$id': typeof MenuIdRoute
@@ -99,7 +99,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/specials': typeof SpecialsRoute
+  '/refreshments': typeof RefreshmentsRoute
   '/track': typeof TrackRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/menu/$id': typeof MenuIdRoute
@@ -112,7 +112,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
-    | '/specials'
+    | '/refreshments'
     | '/track'
     | '/admin'
     | '/menu/$id'
@@ -123,7 +123,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
-    | '/specials'
+    | '/refreshments'
     | '/track'
     | '/admin'
     | '/menu/$id'
@@ -135,7 +135,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
-    | '/specials'
+    | '/refreshments'
     | '/track'
     | '/_authenticated/admin'
     | '/menu/$id'
@@ -148,7 +148,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
-  SpecialsRoute: typeof SpecialsRoute
+  RefreshmentsRoute: typeof RefreshmentsRoute
   TrackRoute: typeof TrackRoute
   MenuIdRoute: typeof MenuIdRoute
   MenuIndexRoute: typeof MenuIndexRoute
@@ -191,11 +191,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/specials': {
-      id: '/specials'
-      path: '/specials'
-      fullPath: '/specials'
-      preLoaderRoute: typeof SpecialsRouteImport
+    '/refreshments': {
+      id: '/refreshments'
+      path: '/refreshments'
+      fullPath: '/refreshments'
+      preLoaderRoute: typeof RefreshmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track': {
@@ -246,7 +246,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
-  SpecialsRoute: SpecialsRoute,
+  RefreshmentsRoute: RefreshmentsRoute,
   TrackRoute: TrackRoute,
   MenuIdRoute: MenuIdRoute,
   MenuIndexRoute: MenuIndexRoute,

@@ -32,8 +32,8 @@ export function SiteFooter() {
           <Link to="/menu" className="block text-muted-foreground hover:text-foreground">
             Full menu
           </Link>
-          <Link to="/specials" className="block text-muted-foreground hover:text-foreground">
-            Hotboxx special
+          <Link to="/refreshments" className="block text-muted-foreground hover:text-foreground">
+            Refreshments
           </Link>
           <Link to="/track" className="block text-muted-foreground hover:text-foreground">
             Track your order

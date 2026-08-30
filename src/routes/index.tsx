@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Flame, Truck, Timer, ShieldCheck, Plus, ArrowRight, CupSoda } from "lucide-react";
+import { Flame, Truck, Timer, ShieldCheck, Plus, ArrowRight, CupSoda, Navigation } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { itemImage } from "@/lib/menu-images";
 import { useSiteImages } from "@/lib/site-images";
 import { useCovers, useHiddenDefaults } from "@/lib/default-images";
+import { useStores } from "@/lib/stores";
+import { storeLocation, directionsUrl } from "@/lib/store-locations";
 import { ZAR, WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
@@ -42,6 +44,7 @@ function Home() {
   const siteImages = useSiteImages();
   const covers = useCovers();
   const hiddenDefaults = useHiddenDefaults();
+  const { stores } = useStores();
 
   const { data: featured } = useQuery({
     queryKey: ["featured"],
@@ -116,10 +119,10 @@ function Home() {
                 Order now
               </Link>
               <Link
-                to="/specials"
+                to="/refreshments"
                 className="rounded-full border border-border px-6 py-3 text-sm font-bold hover:bg-secondary"
               >
-                See the special
+                Browse refreshments
               </Link>
             </div>
           </div>
@@ -246,7 +249,7 @@ function Home() {
             <div>
               <h2 className="text-3xl">THICK <span className="flame-text">MILKSHAKES</span></h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Creamy shakes — only R10 with any kota, burger or sandwich on the current special.
+                Creamy shakes to go with any kota, burger or sandwich.
               </p>
             </div>
           </div>
@@ -279,12 +282,12 @@ function Home() {
           <div className="p-8">
             <h2 className="text-3xl">REFRESHMENTS</h2>
             <p className="mt-2 text-muted-foreground">
-              R17 each — or grab one for R10 with the current special when you buy any kota, burger
-              or sandwich.
+              Ice cold fizzy drinks from R17 and thick milkshakes — browse them all and add one to
+              your order.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/specials" className="rounded-full flame-bg px-5 py-2.5 text-sm font-bold text-primary-foreground">
-                View specials
+              <Link to="/refreshments" className="rounded-full flame-bg px-5 py-2.5 text-sm font-bold text-primary-foreground">
+                Browse refreshments
               </Link>
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
@@ -296,6 +299,37 @@ function Home() {
               </a>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-16 max-w-6xl px-4">
+        <h2 className="text-3xl">FIND <span className="flame-text">US</span></h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Three stores in Matsulu — tap one for turn-by-turn GPS navigation.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {stores.map((s) => {
+            const loc = storeLocation(s.slug);
+            if (!loc) return null;
+            return (
+              <a
+                key={s.id}
+                href={directionsUrl(loc)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent/60"
+              >
+                <Navigation className="size-5 shrink-0 text-accent" />
+                <span className="min-w-0">
+                  <span className="block truncate text-base font-bold">{s.name}</span>
+                  <span className="block truncate text-xs text-muted-foreground">{s.area}</span>
+                  <span className="mt-1 block text-[11px] font-semibold text-accent">
+                    Get directions
+                  </span>
+                </span>
+              </a>
+            );
+          })}
         </div>
       </section>
     </div>

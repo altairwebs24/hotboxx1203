@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { MapPin, ChevronDown, Check } from "lucide-react";
+import { MapPin, ChevronDown, Check, Navigation } from "lucide-react";
 import { useStores } from "@/lib/stores";
+import { storeLocation, directionsUrl } from "@/lib/store-locations";
 
 /** Slim themed strip under the header for choosing a store. */
 export function StoreBar() {
@@ -39,6 +40,18 @@ export function StoreBar() {
               )}
             </span>
           </div>
+
+          {active && storeLocation(active.slug) && (
+            <a
+              href={directionsUrl(storeLocation(active.slug)!)}
+              target="_blank"
+              rel="noreferrer"
+              className="ml-auto mr-1 inline-flex shrink-0 items-center gap-1 rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-foreground"
+            >
+              <Navigation className="size-3.5 text-accent" />
+              <span className="hidden sm:inline">Directions</span>
+            </a>
+          )}
 
           <button
             type="button"

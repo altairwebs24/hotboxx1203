@@ -1,11 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, UtensilsCrossed, Flame, ShoppingBag, Search } from "lucide-react";
+import { Home, UtensilsCrossed, CupSoda, ShoppingBag, Search } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
 const tabs = [
   { to: "/", label: "Home", icon: Home },
   { to: "/menu", label: "Menu", icon: UtensilsCrossed },
-  { to: "/specials", label: "Specials", icon: Flame },
+  { to: "/refreshments", label: "Drinks", icon: CupSoda },
   { to: "/cart", label: "Cart", icon: ShoppingBag },
   { to: "/track", label: "Track", icon: Search },
 ];
