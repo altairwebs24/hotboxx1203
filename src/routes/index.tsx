@@ -116,10 +116,10 @@ function Home() {
                 Order now
               </Link>
               <Link
-                to="/specials"
+                to="/refreshments"
                 className="rounded-full border border-border px-6 py-3 text-sm font-bold hover:bg-secondary"
               >
-                See the special
+                Browse refreshments
               </Link>
             </div>
           </div>
