@@ -279,12 +279,12 @@ function Home() {
           <div className="p-8">
             <h2 className="text-3xl">REFRESHMENTS</h2>
             <p className="mt-2 text-muted-foreground">
-              R17 each — or grab one for R10 with the current special when you buy any kota, burger
-              or sandwich.
+              Ice cold fizzy drinks from R17 and thick milkshakes — browse them all and add one to
+              your order.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/specials" className="rounded-full flame-bg px-5 py-2.5 text-sm font-bold text-primary-foreground">
-                View specials
+              <Link to="/refreshments" className="rounded-full flame-bg px-5 py-2.5 text-sm font-bold text-primary-foreground">
+                Browse refreshments
               </Link>
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
