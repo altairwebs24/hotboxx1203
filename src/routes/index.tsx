@@ -44,6 +44,7 @@ function Home() {
   const siteImages = useSiteImages();
   const covers = useCovers();
   const hiddenDefaults = useHiddenDefaults();
+  const { stores } = useStores();
 
   const { data: featured } = useQuery({
     queryKey: ["featured"],
