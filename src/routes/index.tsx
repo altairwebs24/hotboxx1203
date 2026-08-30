@@ -298,6 +298,37 @@ function Home() {
           </div>
         </div>
       </section>
+
+      <section className="mx-auto mt-16 max-w-6xl px-4">
+        <h2 className="text-3xl">FIND <span className="flame-text">US</span></h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Three stores in Matsulu — tap one for turn-by-turn GPS navigation.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          {stores.map((s) => {
+            const loc = storeLocation(s.slug);
+            if (!loc) return null;
+            return (
+              <a
+                key={s.id}
+                href={directionsUrl(loc)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent/60"
+              >
+                <Navigation className="size-5 shrink-0 text-accent" />
+                <span className="min-w-0">
+                  <span className="block truncate text-base font-bold">{s.name}</span>
+                  <span className="block truncate text-xs text-muted-foreground">{s.area}</span>
+                  <span className="mt-1 block text-[11px] font-semibold text-accent">
+                    Get directions
+                  </span>
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }
