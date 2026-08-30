@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, UtensilsCrossed, Flame, ShoppingBag, Search } from "lucide-react";
+import { Home, UtensilsCrossed, CupSoda, ShoppingBag, Search } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
 const tabs = [
