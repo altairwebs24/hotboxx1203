@@ -41,6 +41,18 @@ export function StoreBar() {
             </span>
           </div>
 
+          {active && storeLocation(active.slug) && (
+            <a
+              href={directionsUrl(storeLocation(active.slug)!)}
+              target="_blank"
+              rel="noreferrer"
+              className="ml-auto mr-1 inline-flex shrink-0 items-center gap-1 rounded-full border border-border px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-foreground"
+            >
+              <Navigation className="size-3.5 text-accent" />
+              <span className="hidden sm:inline">Directions</span>
+            </a>
+          )}
+
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
