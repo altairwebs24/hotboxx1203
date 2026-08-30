@@ -246,7 +246,7 @@ function Home() {
             <div>
               <h2 className="text-3xl">THICK <span className="flame-text">MILKSHAKES</span></h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Creamy shakes — only R10 with any kota, burger or sandwich on the current special.
+                Creamy shakes to go with any kota, burger or sandwich.
               </p>
             </div>
           </div>
