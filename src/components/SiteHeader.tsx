@@ -10,7 +10,7 @@ import { WHATSAPP_DISPLAY } from "@/lib/format";
 const links = [
   { to: "/", label: "Home" },
   { to: "/menu", label: "Menu" },
-  { to: "/specials", label: "Specials" },
+  { to: "/refreshments", label: "Refreshments" },
   { to: "/track", label: "Track order" },
 ];
 
