@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { MapPin, ChevronDown, Check } from "lucide-react";
+import { MapPin, ChevronDown, Check, Navigation } from "lucide-react";
 import { useStores } from "@/lib/stores";
+import { storeLocation, directionsUrl } from "@/lib/store-locations";
 
 /** Slim themed strip under the header for choosing a store. */
 export function StoreBar() {
