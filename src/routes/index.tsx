@@ -7,6 +7,8 @@ import { useCart } from "@/lib/cart";
 import { itemImage } from "@/lib/menu-images";
 import { useSiteImages } from "@/lib/site-images";
 import { useCovers, useHiddenDefaults } from "@/lib/default-images";
+import { useStores } from "@/lib/stores";
+import { storeLocation, directionsUrl } from "@/lib/store-locations";
 import { ZAR, WHATSAPP_DISPLAY, WHATSAPP_NUMBER } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
