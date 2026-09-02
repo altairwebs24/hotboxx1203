@@ -2,8 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { resolvePhotoUrls } from "./item-photos";
 import { deco } from "./menu-images";
-import heroAsset from "@/assets/hero-kota.jpg.asset.json";
-import drinksAsset from "@/assets/drinks.jpg.asset.json";
+import brand from "@/assets/brand-images.json";
+
+const heroAsset = { url: brand["hero-kota"] };
+const drinksAsset = { url: brand["drinks"] };
 
 export const SITE_IMAGE_PREFIX = "site_image.";
 

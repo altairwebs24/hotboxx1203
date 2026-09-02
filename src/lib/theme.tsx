@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import logoRed from "@/assets/hotboxx-logo-red.jpg.asset.json";
-import logoBlack from "@/assets/hotboxx-logo-black.jpg.asset.json";
+import brand from "@/assets/brand-images.json";
+
+const logoRed = { url: brand["hotboxx-logo-red"] };
+const logoBlack = { url: brand["hotboxx-logo-black"] };
 
 export type ThemeKey = "red" | "mono";
 

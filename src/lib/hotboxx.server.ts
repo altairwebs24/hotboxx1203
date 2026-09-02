@@ -143,32 +143,68 @@ export function shapeOrder(row: any): OrderRecord {
   };
 }
 
-/** Returns true if the user is an admin, promoting them if their email is on the admin list. */
-export async function ensureAdmin(userId: string, email: string | null): Promise<boolean> {
-  const { data: roleRow } = await supabaseAdmin
-    .from("user_roles")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (roleRow) return true;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Returns true if the user is an admin, promoting them if their email is on the admin list.
+ * Works even when the privileged service key is unavailable (e.g. an external deployment
+ * that only has the public keys configured) by falling back to the caller's own client.
+ */
+export async function ensureAdmin(
+  userId: string,
+  email: string | null,
+  userClient?: any,
+): Promise<boolean> {
+  const normalized = email?.trim().toLowerCase() ?? null;
 
-  if (!email) return false;
-  const { data: allowed } = await supabaseAdmin
-    .from("admin_emails")
-    .select("email")
-    .eq("email", email.trim().toLowerCase())
-    .maybeSingle();
-  if (!allowed) return false;
+  // Fallback path first when there is no service key configured on this deployment.
+  const viaUser = async (): Promise<boolean> => {
+    if (!userClient) return false;
+    const { data: role } = await userClient
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (role) return true;
+    if (!normalized) return false;
+    const { data: allowed } = await userClient
+      .from("admin_emails")
+      .select("email")
+      .ilike("email", normalized)
+      .maybeSingle();
+    return Boolean(allowed);
+  };
 
-  await supabaseAdmin.from("user_roles").insert({ user_id: userId, role: "admin" });
-  return true;
+  try {
+    const { data: roleRow } = await supabaseAdmin
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (roleRow) return true;
+
+    if (!normalized) return viaUser();
+    const { data: allowed } = await supabaseAdmin
+      .from("admin_emails")
+      .select("email")
+      .ilike("email", normalized)
+      .maybeSingle();
+    if (!allowed) return viaUser();
+
+    await supabaseAdmin.from("user_roles").insert({ user_id: userId, role: "admin" });
+    return true;
+  } catch (err) {
+    console.error("[admin] privileged check unavailable", err);
+    return viaUser();
+  }
 }
 
-export async function requireAdmin(userId: string, email: string | null) {
-  const ok = await ensureAdmin(userId, email);
+export async function requireAdmin(userId: string, email: string | null, userClient?: any) {
+  const ok = await ensureAdmin(userId, email, userClient);
   if (!ok) throw new Error("Forbidden: admins only");
 }
+
 
 export async function listAllOrders() {
   const { data, error } = await supabaseAdmin
