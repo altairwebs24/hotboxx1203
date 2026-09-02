@@ -2,19 +2,12 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const MENU_BUCKET = "menu-images";
 
-/** Rows store either a full https URL (legacy) or a storage path in the menu-images bucket. */
+/** Rows store either a full https URL (legacy) or a storage path in the public menu-images bucket. */
 export async function resolvePhotoUrls(paths: string[]): Promise<Record<string, string>> {
   const out: Record<string, string> = {};
-  const needSigning: string[] = [];
   for (const p of paths) {
     if (/^https?:\/\//.test(p)) out[p] = p;
-    else needSigning.push(p);
-  }
-  if (needSigning.length > 0) {
-    const { data } = await supabase.storage.from(MENU_BUCKET).createSignedUrls(needSigning, 60 * 60 * 6);
-    for (const row of data ?? []) {
-      if (row.path && row.signedUrl) out[row.path] = row.signedUrl;
-    }
+    else out[p] = supabase.storage.from(MENU_BUCKET).getPublicUrl(p).data.publicUrl;
   }
   return out;
 }
