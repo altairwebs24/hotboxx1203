@@ -9,7 +9,7 @@ export const getAdminStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { ensureAdmin } = await import("./hotboxx.server");
-    const isAdmin = await ensureAdmin(context.userId, emailOf(context.claims));
+    const isAdmin = await ensureAdmin(context.userId, emailOf(context.claims), context.supabase);
     return { isAdmin, email: emailOf(context.claims) };
   });
 
@@ -17,7 +17,7 @@ export const adminListOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { requireAdmin, listAllOrders } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     return listAllOrders();
   });
 
@@ -41,7 +41,7 @@ export const adminUpdateOrderStatus = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("orders")
@@ -67,7 +67,7 @@ export const adminSaveMenuItem = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const payload = {
       category_id: data.categoryId,
@@ -100,7 +100,7 @@ export const adminAddItemImage = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // Newest upload becomes the cover photo: place it before every existing image.
     const { data: first } = await supabaseAdmin
@@ -123,7 +123,7 @@ export const adminDeleteItemImage = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row } = await supabaseAdmin
       .from("menu_item_images")
@@ -144,7 +144,7 @@ export const adminDeleteMenuItem = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("menu_items").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
@@ -158,7 +158,7 @@ export const adminSaveSetting = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("settings")
@@ -171,7 +171,7 @@ export const adminListAdminEmails = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("admin_emails")
@@ -188,7 +188,7 @@ export const adminAddAdminEmail = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("admin_emails")
@@ -204,7 +204,7 @@ export const adminRemoveAdminEmail = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { requireAdmin } = await import("./hotboxx.server");
-    await requireAdmin(context.userId, emailOf(context.claims));
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
     const email = data.email.toLowerCase();
     const self = (emailOf(context.claims) ?? "").toLowerCase();
     if (email === self) throw new Error("You cannot remove your own admin access");
