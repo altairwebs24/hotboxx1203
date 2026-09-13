@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 import { ZAR, WHATSAPP_NUMBER } from "@/lib/format";
 import { placeOrder } from "@/lib/orders.functions";
+import { startCardPayment } from "@/lib/payments.functions";
 import { placeOrderAsUser } from "@/lib/admin.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { DrinkUpsell } from "@/components/DrinkUpsell";
@@ -35,12 +36,14 @@ function Checkout() {
   const navigate = useNavigate();
   const submitGuest = useServerFn(placeOrder);
   const submitUser = useServerFn(placeOrderAsUser);
+  const startPayment = useServerFn(startCardPayment);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [fulfillment, setFulfillment] = useState<"collection" | "delivery">("collection");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
+  const [payment, setPayment] = useState<"card" | "whatsapp">("card");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ orderNumber: string; total: number; storeName: string } | null>(null);
 

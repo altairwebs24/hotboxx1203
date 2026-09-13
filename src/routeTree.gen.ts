@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as PaymentReturnRouteImport } from './routes/payment-return'
 import { Route as RefreshmentsRouteImport } from './routes/refreshments'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -42,6 +43,11 @@ const CartRoute = CartRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentReturnRoute = PaymentReturnRouteImport.update({
+  id: '/payment-return',
+  path: '/payment-return',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RefreshmentsRoute = RefreshmentsRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/payment-return': typeof PaymentReturnRoute
   '/refreshments': typeof RefreshmentsRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/payment-return': typeof PaymentReturnRoute
   '/refreshments': typeof RefreshmentsRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/payment-return': typeof PaymentReturnRoute
   '/refreshments': typeof RefreshmentsRoute
   '/track': typeof TrackRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
+    | '/payment-return'
     | '/refreshments'
     | '/track'
     | '/admin'
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
+    | '/payment-return'
     | '/refreshments'
     | '/track'
     | '/admin'
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cart'
     | '/checkout'
+    | '/payment-return'
     | '/refreshments'
     | '/track'
     | '/_authenticated/admin'
@@ -148,6 +160,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  PaymentReturnRoute: typeof PaymentReturnRoute
   RefreshmentsRoute: typeof RefreshmentsRoute
   TrackRoute: typeof TrackRoute
   MenuIdRoute: typeof MenuIdRoute
@@ -189,6 +202,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-return': {
+      id: '/payment-return'
+      path: '/payment-return'
+      fullPath: '/payment-return'
+      preLoaderRoute: typeof PaymentReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/refreshments': {
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  PaymentReturnRoute: PaymentReturnRoute,
   RefreshmentsRoute: RefreshmentsRoute,
   TrackRoute: TrackRoute,
   MenuIdRoute: MenuIdRoute,
