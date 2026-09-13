@@ -207,6 +207,33 @@ function Checkout() {
           <Field label="Order notes (optional)">
             <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} rows={2} className={inputCls} placeholder="e.g. Special Option 2 with a Lime Milkshake" />
           </Field>
+          <Field label="How would you like to pay?">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPayment("card")}
+                className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-bold ${
+                  payment === "card" ? "flame-bg text-primary-foreground" : "border border-border"
+                }`}
+              >
+                Card online
+              </button>
+              <button
+                type="button"
+                onClick={() => setPayment("whatsapp")}
+                className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-bold ${
+                  payment === "whatsapp" ? "flame-bg text-primary-foreground" : "border border-border"
+                }`}
+              >
+                WhatsApp
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {payment === "card"
+                ? "You'll be taken to a secure card payment page, then straight back here."
+                : "You'll get your order number and finish payment with us on WhatsApp."}
+            </p>
+          </Field>
         </div>
 
         <div className="h-fit rounded-2xl border border-border bg-card p-5">
@@ -234,10 +261,16 @@ function Checkout() {
             disabled={busy}
             className="mt-5 w-full rounded-full flame-bg py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
           >
-            {busy ? "Placing order…" : "Place order"}
+            {busy
+              ? "Placing order…"
+              : payment === "card"
+                ? `Pay ${ZAR(total)} by card`
+                : "Place order"}
           </button>
           <p className="mt-3 text-xs text-muted-foreground">
-            Payment is completed on WhatsApp after you get your order number.
+            {payment === "card"
+              ? "Card payments are processed securely by Yoco."
+              : "Payment is completed on WhatsApp after you get your order number."}
           </p>
         </div>
       </div>
