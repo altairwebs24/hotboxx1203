@@ -4,7 +4,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { confirmCardPayment } from "@/lib/payments.functions";
 import { ZAR, WHATSAPP_NUMBER } from "@/lib/format";
 
-type Search = { order?: string; cancelled?: string; failed?: string };
+type Search = {
+  order: string | undefined;
+  cancelled: string | undefined;
+  failed: string | undefined;
+};
 
 export const Route = createFileRoute("/payment-return")({
   validateSearch: (search: Record<string, unknown>): Search => ({
