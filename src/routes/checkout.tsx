@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 import { ZAR, WHATSAPP_NUMBER } from "@/lib/format";
 import { placeOrder } from "@/lib/orders.functions";
+import { startCardPayment } from "@/lib/payments.functions";
 import { placeOrderAsUser } from "@/lib/admin.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { DrinkUpsell } from "@/components/DrinkUpsell";
@@ -35,12 +36,14 @@ function Checkout() {
   const navigate = useNavigate();
   const submitGuest = useServerFn(placeOrder);
   const submitUser = useServerFn(placeOrderAsUser);
+  const startPayment = useServerFn(startCardPayment);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [fulfillment, setFulfillment] = useState<"collection" | "delivery">("collection");
   const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
+  const [payment, setPayment] = useState<"card" | "whatsapp">("card");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ orderNumber: string; total: number; storeName: string } | null>(null);
 
@@ -83,8 +86,17 @@ function Checkout() {
         : await submitGuest({ data: payload });
 
       clear();
-      setResult({ orderNumber: order.orderNumber, total: order.total, storeName: order.storeName });
       toast.success(`Order placed — your order number is ${order.orderNumber}`);
+
+      if (payment === "card") {
+        const pay = await startPayment({ data: { orderNumber: order.orderNumber } });
+        if (pay.redirectUrl) {
+          window.location.href = pay.redirectUrl;
+          return;
+        }
+      }
+
+      setResult({ orderNumber: order.orderNumber, total: order.total, storeName: order.storeName });
 
       const summary = order.items
         .map((i) => `${i.quantity}x ${i.name}${i.note ? ` (${i.note})` : ""}`)
@@ -195,6 +207,33 @@ function Checkout() {
           <Field label="Order notes (optional)">
             <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} rows={2} className={inputCls} placeholder="e.g. Special Option 2 with a Lime Milkshake" />
           </Field>
+          <Field label="How would you like to pay?">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPayment("card")}
+                className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-bold ${
+                  payment === "card" ? "flame-bg text-primary-foreground" : "border border-border"
+                }`}
+              >
+                Card online
+              </button>
+              <button
+                type="button"
+                onClick={() => setPayment("whatsapp")}
+                className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-bold ${
+                  payment === "whatsapp" ? "flame-bg text-primary-foreground" : "border border-border"
+                }`}
+              >
+                WhatsApp
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {payment === "card"
+                ? "You'll be taken to a secure card payment page, then straight back here."
+                : "You'll get your order number and finish payment with us on WhatsApp."}
+            </p>
+          </Field>
         </div>
 
         <div className="h-fit rounded-2xl border border-border bg-card p-5">
@@ -222,10 +261,16 @@ function Checkout() {
             disabled={busy}
             className="mt-5 w-full rounded-full flame-bg py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
           >
-            {busy ? "Placing order…" : "Place order"}
+            {busy
+              ? "Placing order…"
+              : payment === "card"
+                ? `Pay ${ZAR(total)} by card`
+                : "Place order"}
           </button>
           <p className="mt-3 text-xs text-muted-foreground">
-            Payment is completed on WhatsApp after you get your order number.
+            {payment === "card"
+              ? "Card payments are processed securely by Yoco."
+              : "Payment is completed on WhatsApp after you get your order number."}
           </p>
         </div>
       </div>
