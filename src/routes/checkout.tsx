@@ -86,8 +86,17 @@ function Checkout() {
         : await submitGuest({ data: payload });
 
       clear();
-      setResult({ orderNumber: order.orderNumber, total: order.total, storeName: order.storeName });
       toast.success(`Order placed — your order number is ${order.orderNumber}`);
+
+      if (payment === "card") {
+        const pay = await startPayment({ data: { orderNumber: order.orderNumber } });
+        if (pay.redirectUrl) {
+          window.location.href = pay.redirectUrl;
+          return;
+        }
+      }
+
+      setResult({ orderNumber: order.orderNumber, total: order.total, storeName: order.storeName });
 
       const summary = order.items
         .map((i) => `${i.quantity}x ${i.name}${i.note ? ` (${i.note})` : ""}`)
