@@ -214,6 +214,27 @@ export const adminRemoveAdminEmail = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const registerAdminPushToken = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({ token: z.string().trim().min(10).max(500), label: z.string().trim().max(120).default("") })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { requireAdmin } = await import("./hotboxx.server");
+    await requireAdmin(context.userId, emailOf(context.claims), context.supabase);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("admin_push_tokens")
+      .upsert(
+        { user_id: context.userId, token: data.token, label: data.label, updated_at: new Date().toISOString() },
+        { onConflict: "token" },
+      );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const myOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
