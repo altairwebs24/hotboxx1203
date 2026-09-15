@@ -9,6 +9,7 @@ import {
   adminListAdminEmails,
   adminListOrders,
   adminRemoveAdminEmail,
+  registerAdminPushToken,
   adminSaveMenuItem,
   adminUpdateOrderStatus,
   getAdminStatus,
@@ -16,6 +17,7 @@ import {
 import { STATUS_LABEL, STATUS_ORDER, ZAR } from "@/lib/format";
 import { MenuItemEditor, type EditableItem } from "@/components/MenuItemEditor";
 import { SiteImagesEditor } from "@/components/SiteImagesEditor";
+import { enableAdminPush } from "@/lib/push";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: Admin,
