@@ -32,6 +32,31 @@ function Admin() {
   const listAdmins = useServerFn(adminListAdminEmails);
   const addAdmin = useServerFn(adminAddAdminEmail);
   const removeAdmin = useServerFn(adminRemoveAdminEmail);
+  const savePushToken = useServerFn(registerAdminPushToken);
+  const [alertsBusy, setAlertsBusy] = useState(false);
+
+  const turnOnAlerts = async () => {
+    setAlertsBusy(true);
+    try {
+      const result = await enableAdminPush();
+      if (result.status === "registered") {
+        await savePushToken({ data: { token: result.token, label: navigator.userAgent.slice(0, 120) } });
+        toast.success("Order alerts are on for this device");
+      } else if (result.status === "open-in-new-tab") {
+        toast.error("Open the site in its own browser tab, then turn alerts on");
+      } else if (result.status === "denied") {
+        toast.error("Notifications are blocked. Allow them for this site in your browser settings");
+      } else if (result.status === "unsupported") {
+        toast.error("This browser can't receive order alerts");
+      } else {
+        toast.error("Order alerts aren't set up yet");
+      }
+    } catch {
+      toast.error("Could not turn on order alerts");
+    } finally {
+      setAlertsBusy(false);
+    }
+  };
   const [tab, setTab] = useState<"orders" | "menu" | "images" | "admins">("orders");
   const [newAdmin, setNewAdmin] = useState("");
   const [editing, setEditing] = useState<EditableItem | null>(null);
@@ -111,15 +136,24 @@ function Admin() {
     <div className="mx-auto max-w-6xl px-4 py-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-4xl">ADMIN <span className="flame-text">PANEL</span></h1>
-        <button
-          onClick={async () => {
-            await supabase.auth.signOut();
-            window.location.href = "/";
-          }}
-          className="rounded-full border border-border px-4 py-2 text-xs font-bold"
-        >
-          Sign out
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={turnOnAlerts}
+            disabled={alertsBusy}
+            className="rounded-full flame-bg px-4 py-2 text-xs font-bold text-primary-foreground disabled:opacity-60"
+          >
+            {alertsBusy ? "Turning on…" : "Turn on order alerts"}
+          </button>
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = "/";
+            }}
+            className="rounded-full border border-border px-4 py-2 text-xs font-bold"
+          >
+            Sign out
+          </button>
+        </div>
       </div>
 
       <div className="mt-5 flex gap-2">
