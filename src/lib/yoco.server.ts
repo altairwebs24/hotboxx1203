@@ -102,5 +102,20 @@ export async function confirmYocoPayment(orderNumber: string) {
     })
     .eq("id", order.id);
 
+  if (paid) {
+    const { data: withStore } = await supabaseAdmin
+      .from("orders")
+      .select("stores(name, area)")
+      .eq("id", order.id)
+      .maybeSingle();
+    const store = withStore?.stores as { name: string; area: string } | null | undefined;
+    const { notifyAdminsOfPaidOrder } = await import("./push.server");
+    await notifyAdminsOfPaidOrder({
+      orderNumber: order.order_number,
+      total: Number(order.total),
+      storeName: store ? `${store.name} (${store.area})` : null,
+    });
+  }
+
   return { orderNumber: order.order_number, paid, total: Number(order.total) };
 }

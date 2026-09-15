@@ -212,6 +212,7 @@ export async function listAllOrders() {
     .select(
       "id, order_number, customer_name, phone, fulfillment, address, note, subtotal, delivery_fee, total, status, created_at, stores(name, area), order_items(name, unit_price, quantity, note)",
     )
+    .eq("payment_status", "paid")
     .order("created_at", { ascending: false })
     .limit(300);
   if (error) throw new Error(error.message);
