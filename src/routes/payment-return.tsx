@@ -33,6 +33,7 @@ function PaymentReturn() {
   const confirm = useServerFn(confirmCardPayment);
   const [state, setState] = useState<"checking" | "paid" | "unpaid" | "error">("checking");
   const [total, setTotal] = useState<number | null>(null);
+  const [waLink, setWaLink] = useState<string | null>(null);
 
   useEffect(() => {
     if (!order) {
@@ -49,6 +50,28 @@ function PaymentReturn() {
         if (!live) return;
         setTotal(r.total);
         setState(r.paid ? "paid" : "unpaid");
+        if (r.paid) {
+          const s = r.summary;
+          const lines = [
+            `Hi Hotboxx! I've paid for my order.`,
+            `Order number: *${r.orderNumber}*`,
+            s?.paymentId ? `Payment ID: ${s.paymentId}` : null,
+            s?.storeName ? `Store: ${s.storeName}` : null,
+            ...(s?.items ?? []).map((i) => `${i.quantity}x ${i.name}${i.note ? ` (${i.note})` : ""}`),
+            s ? (s.fulfillment === "delivery" ? `Delivery to: ${s.address ?? ""}` : "Collection") : null,
+            `Total paid: R${r.total}`,
+            s?.customerName ? `Name: ${s.customerName}` : null,
+          ].filter(Boolean);
+          const link = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+          setWaLink(link);
+          const key = `wa-sent-${r.orderNumber}`;
+          if (!sessionStorage.getItem(key)) {
+            sessionStorage.setItem(key, "1");
+            setTimeout(() => {
+              window.location.href = link;
+            }, 1500);
+          }
+        }
       })
       .catch(() => live && setState("error"));
     return () => {
@@ -66,8 +89,16 @@ function PaymentReturn() {
           <h1 className="mt-3 font-display text-5xl flame-text">{order}</h1>
           <p className="mt-4 text-muted-foreground">
             Thank you! We've received {total !== null ? ZAR(total) : "your payment"} and your order is
-            confirmed. Keep this order number to track your order.
+            confirmed. Taking you to WhatsApp to send us your order details…
           </p>
+          {waLink && (
+            <a
+              href={waLink}
+              className="mt-6 inline-block rounded-full flame-bg px-6 py-3 text-sm font-bold text-primary-foreground"
+            >
+              Send order on WhatsApp
+            </a>
+          )}
         </>
       )}
 
