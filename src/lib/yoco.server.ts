@@ -117,7 +117,12 @@ export async function confirmYocoPayment(orderNumber: string) {
     });
   }
 
-  return { orderNumber: order.order_number, paid, total: Number(order.total) };
+  return {
+    orderNumber: order.order_number,
+    paid,
+    total: Number(order.total),
+    summary: paid ? await paidOrderSummary(order.order_number) : null,
+  };
 }
 
 /** Details used to build the customer's WhatsApp receipt message (paid orders only). */
