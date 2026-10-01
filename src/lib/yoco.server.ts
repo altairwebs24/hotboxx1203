@@ -76,10 +76,10 @@ export async function confirmYocoPayment(orderNumber: string) {
   if (!order) throw new Error("Order not found");
 
   if (order.payment_status === "paid") {
-    return { orderNumber: order.order_number, paid: true, total: Number(order.total) };
+    return { orderNumber: order.order_number, paid: true, total: Number(order.total), summary: await paidOrderSummary(order.order_number) };
   }
   if (!order.payment_reference) {
-    return { orderNumber: order.order_number, paid: false, total: Number(order.total) };
+    return { orderNumber: order.order_number, paid: false, total: Number(order.total), summary: null };
   }
 
   const res = await fetch(`${YOCO_API}/${order.payment_reference}`, {
@@ -118,4 +118,31 @@ export async function confirmYocoPayment(orderNumber: string) {
   }
 
   return { orderNumber: order.order_number, paid, total: Number(order.total) };
+}
+
+/** Details used to build the customer's WhatsApp receipt message (paid orders only). */
+export async function paidOrderSummary(orderNumber: string) {
+  const { data } = await supabaseAdmin
+    .from("orders")
+    .select(
+      "order_number, customer_name, fulfillment, address, total, payment_status, payment_reference, stores(name, area), order_items(name, quantity, note)",
+    )
+    .ilike("order_number", orderNumber.trim())
+    .maybeSingle();
+  if (!data || data.payment_status !== "paid") return null;
+  const store = data.stores as { name: string; area: string } | null;
+  return {
+    orderNumber: data.order_number,
+    customerName: data.customer_name,
+    fulfillment: data.fulfillment as string,
+    address: data.address as string | null,
+    total: Number(data.total),
+    paymentId: data.payment_reference as string | null,
+    storeName: store ? `${store.name} (${store.area})` : null,
+    items: ((data.order_items ?? []) as { name: string; quantity: number; note: string }[]).map((i) => ({
+      name: i.name,
+      quantity: i.quantity,
+      note: i.note,
+    })),
+  };
 }
