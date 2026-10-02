@@ -22,7 +22,7 @@ export function SiteFooter() {
             </a>
           </p>
           <p className="flex items-center gap-2 text-muted-foreground">
-            <MapPin className="size-4 text-accent" /> Delivery around Matsulu — R30
+            <MapPin className="size-4 text-accent" /> Delivery around Matsulu — R50
           </p>
           <p className="flex items-center gap-2 text-muted-foreground">
             <Clock className="size-4 text-accent" /> Collection also available
