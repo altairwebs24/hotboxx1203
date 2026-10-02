@@ -130,7 +130,7 @@ export async function paidOrderSummary(orderNumber: string) {
   const { data } = await supabaseAdmin
     .from("orders")
     .select(
-      "order_number, customer_name, fulfillment, address, total, payment_status, payment_reference, stores(name, area), order_items(name, quantity, note)",
+      "order_number, customer_name, fulfillment, address, total, payment_status, payment_reference, stores(name, area, slug), order_items(name, quantity, note)",
     )
     .ilike("order_number", orderNumber.trim())
     .maybeSingle();
@@ -144,6 +144,7 @@ export async function paidOrderSummary(orderNumber: string) {
     total: Number(data.total),
     paymentId: data.payment_reference as string | null,
     storeName: store ? `${store.name} (${store.area})` : null,
+    storeSlug: (data.stores as { slug?: string } | null)?.slug ?? null,
     items: ((data.order_items ?? []) as { name: string; quantity: number; note: string }[]).map((i) => ({
       name: i.name,
       quantity: i.quantity,
