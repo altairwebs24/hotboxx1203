@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
-import { ZAR, WHATSAPP_NUMBER } from "@/lib/format";
+import { ZAR, whatsappFor } from "@/lib/format";
 import { placeOrder } from "@/lib/orders.functions";
 import { startCardPayment } from "@/lib/payments.functions";
 import { placeOrderAsUser } from "@/lib/admin.functions";
@@ -31,7 +31,8 @@ const DELIVERY_FEE = 30;
 
 function Checkout() {
   const { lines, subtotal, clear } = useCart();
-  const { storeId } = useStores();
+  const { storeId, stores } = useStores();
+  const waNumber = whatsappFor(stores.find((s) => s.id === storeId)?.slug);
   const { session } = useAuth();
   const navigate = useNavigate();
   const submitGuest = useServerFn(placeOrder);
@@ -104,7 +105,7 @@ function Checkout() {
       const message = `Hi Hotboxx! Order *${order.orderNumber}*%0AStore: ${order.storeName}%0A${summary}%0A${
         fulfillment === "delivery" ? `Delivery to: ${address.trim()}` : "Collection"
       }%0ATotal: R${order.total}%0AName: ${name.trim()}`;
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
+      window.open(`https://wa.me/${waNumber}?text=${message}`, "_blank");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not place your order");
     } finally {
@@ -139,7 +140,7 @@ function Checkout() {
         </button>
         <div className="mt-7 flex flex-col gap-3">
           <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}`}
+            href={`https://wa.me/${waNumber}`}
             target="_blank"
             rel="noreferrer"
             className="rounded-full flame-bg py-3 text-sm font-bold text-primary-foreground"

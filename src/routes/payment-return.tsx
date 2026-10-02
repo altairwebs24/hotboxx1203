@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { confirmCardPayment } from "@/lib/payments.functions";
-import { ZAR, WHATSAPP_NUMBER } from "@/lib/format";
+import { ZAR, whatsappFor } from "@/lib/format";
 
 type Search = {
   order: string | undefined;
@@ -62,7 +62,7 @@ function PaymentReturn() {
             `Total paid: R${r.total}`,
             s?.customerName ? `Name: ${s.customerName}` : null,
           ].filter(Boolean);
-          const link = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
+          const link = `https://wa.me/${whatsappFor(s?.storeSlug)}?text=${encodeURIComponent(lines.join("\n"))}`;
           setWaLink(link);
           const key = `wa-sent-${r.orderNumber}`;
           if (!sessionStorage.getItem(key)) {
@@ -113,7 +113,7 @@ function PaymentReturn() {
             payment again from your order number.
           </p>
           <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hi%20Hotboxx!%20Order%20${order}`}
+            href={`https://wa.me/${whatsappFor(slug)}?text=Hi%20Hotboxx!%20Order%20${order}`}
             target="_blank"
             rel="noreferrer"
             className="mt-6 inline-block rounded-full flame-bg px-6 py-3 text-sm font-bold text-primary-foreground"

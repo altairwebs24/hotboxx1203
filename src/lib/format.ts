@@ -23,3 +23,14 @@ export const STATUS_ORDER = [
 
 export const WHATSAPP_NUMBER = "27799155422";
 export const WHATSAPP_DISPLAY = "079 915 5422";
+
+/** WhatsApp number per branch, keyed by store slug. */
+export const STORE_WHATSAPP: Record<string, string> = {
+  days: "27799155422",
+  "boxer-complex": "27606598171",
+  eringin: "27660483724",
+};
+
+export function whatsappFor(slug?: string | null) {
+  return (slug && STORE_WHATSAPP[slug]) || WHATSAPP_NUMBER;
+}
