@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { confirmCardPayment } from "@/lib/payments.functions";
 import { ZAR, whatsappFor } from "@/lib/format";
+import { useStores } from "@/lib/stores";
 
 type Search = {
   order: string | undefined;
@@ -34,6 +35,8 @@ function PaymentReturn() {
   const [state, setState] = useState<"checking" | "paid" | "unpaid" | "error">("checking");
   const [total, setTotal] = useState<number | null>(null);
   const [waLink, setWaLink] = useState<string | null>(null);
+  const { storeId, stores } = useStores();
+  const slug = stores.find((s) => s.id === storeId)?.slug;
 
   useEffect(() => {
     if (!order) {
