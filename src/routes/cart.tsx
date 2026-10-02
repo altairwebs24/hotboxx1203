@@ -78,7 +78,7 @@ function CartPage() {
               <span className="font-bold">{ZAR(subtotal)}</span>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Delivery around Matsulu adds R30 — choose collection or delivery at checkout.
+              Delivery around Matsulu adds R50 — choose collection or delivery at checkout.
             </p>
             <Link
               to="/checkout"

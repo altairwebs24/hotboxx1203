@@ -1,0 +1,1 @@
+INSERT INTO public.settings (key, value) VALUES ('delivery_fee', '50') ON CONFLICT (key) DO UPDATE SET value = '50', updated_at = now();

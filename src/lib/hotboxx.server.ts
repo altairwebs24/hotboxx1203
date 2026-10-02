@@ -53,7 +53,7 @@ export async function createOrder(raw: PlaceOrderInput, userId: string | null) {
     .maybeSingle();
 
   const subtotal = lines.reduce((n, l) => n + l.unit_price * l.quantity, 0);
-  const deliveryFee = data.fulfillment === "delivery" ? Number(feeRow?.value ?? 30) : 0;
+  const deliveryFee = data.fulfillment === "delivery" ? Number(feeRow?.value ?? 50) : 0;
   const total = subtotal + deliveryFee;
 
   const { data: store, error: storeError } = await supabaseAdmin

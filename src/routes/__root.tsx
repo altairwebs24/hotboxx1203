@@ -88,17 +88,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R30 delivery around Matsulu.",
+          "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R50 delivery around Matsulu.",
       },
       { property: "og:title", content: "Hotboxx | Order Kotas, Burgers & Combos Online" },
       {
         property: "og:description",
-        content: "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R30 delivery around Matsulu.",
+        content: "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R50 delivery around Matsulu.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Hotboxx | Order Kotas, Burgers & Combos Online" },
-      { name: "twitter:description", content: "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R30 delivery around Matsulu." },
+      { name: "twitter:description", content: "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R50 delivery around Matsulu." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/77eba76a-9a8e-469f-a288-214ef354af73/id-preview-1e95a9aa--40e39b52-3448-4145-97f0-88f804367dcc.lovable.app-1785781467261.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/77eba76a-9a8e-469f-a288-214ef354af73/id-preview-1e95a9aa--40e39b52-3448-4145-97f0-88f804367dcc.lovable.app-1785781467261.png" },
     ],

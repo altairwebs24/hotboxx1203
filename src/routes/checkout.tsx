@@ -27,7 +27,7 @@ export const Route = createFileRoute("/checkout")({
   component: Checkout,
 });
 
-const DELIVERY_FEE = 30;
+const DELIVERY_FEE = 50;
 
 function Checkout() {
   const { lines, subtotal, clear } = useCart();
@@ -195,7 +195,7 @@ function Checkout() {
                     fulfillment === f ? "flame-bg text-primary-foreground" : "border border-border"
                   }`}
                 >
-                  {f === "delivery" ? "Delivery (R30)" : "Collection"}
+                  {f === "delivery" ? "Delivery (R50)" : "Collection"}
                 </button>
               ))}
             </div>

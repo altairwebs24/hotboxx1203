@@ -18,12 +18,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R30 delivery around Matsulu.",
+          "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R50 delivery around Matsulu.",
       },
       { property: "og:title", content: "Hotboxx | Order Kotas, Burgers & Combos Online" },
       {
         property: "og:description",
-        content: "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R30 delivery around Matsulu.",
+        content: "Hotboxx — the right choice. Order kotas, burgers, sandwiches, wings and nugget combos. Collection or R50 delivery around Matsulu.",
       },
     ],
   }),
@@ -148,7 +148,7 @@ function Home() {
       <section className="mx-auto mt-10 grid max-w-6xl gap-4 px-4 sm:grid-cols-3">
         {[
           { icon: Timer, title: "Made to order", text: "Everything is grilled and packed fresh when you order." },
-          { icon: Truck, title: "R30 delivery", text: "Delivery around Matsulu, or collect from us." },
+          { icon: Truck, title: "R50 delivery", text: "Delivery around Matsulu, or collect from us." },
           { icon: ShieldCheck, title: "Order number", text: "Every order gets a tracking number like HB-1001." },
         ].map((f) => (
           <div key={f.title} className="rounded-2xl border border-border bg-card p-5">
